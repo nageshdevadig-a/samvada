@@ -2,10 +2,10 @@ spring:
   application:
     name: samvada
 
+#  Data Behaviour
+  data:
+    mongodb:
+      auto-index-creation: true
+  #  MongoDB Configuration
   mongodb:
-    host: localhost
-    port: 27017
-    database: samvada_db
-    username: root
-    password: password@123
-    authentication-database: admin
+    uri: mongodb://roo:password%40123@localhost:27017/samvada_db?authSource=admin
