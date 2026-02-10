@@ -5,7 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import io.tharka.samvada.auth.RefreshToken;
+//import io.tharka.samvada.auth.RefreshToken;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -64,8 +64,7 @@ public class JWTService {
     }
 
 
-    public boolean validateToken(String token, UserPrincipal userDetails) {
-        final String userId = extractUserId(token);
+    public boolean validateToken(String userId, String token, UserPrincipal userDetails) {
         return (userId.equals(userDetails.getId()) && !isTokenExpired(token));
     }
 

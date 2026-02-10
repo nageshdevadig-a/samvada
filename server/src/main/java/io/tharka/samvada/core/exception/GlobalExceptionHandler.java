@@ -1,5 +1,8 @@
 package io.tharka.samvada.core.exception;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -60,7 +63,7 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
+    @ExceptionHandler({UserNotFoundException.class  , UsernameNotFoundException.class})
     public ResponseEntity<@NonNull ErrorDTO> handleUserNotFoundException(UserNotFoundException ex, HttpServletRequest request)
     {
         return buildErrorResponse(
@@ -72,17 +75,6 @@ public class GlobalExceptionHandler {
         );
     }
 
-    @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<@NonNull ErrorDTO> handleUsernameNotFoundException(UsernameNotFoundException ex, HttpServletRequest request)
-    {
-        return buildErrorResponse(
-                HttpStatus.NOT_FOUND,
-                "User Not Found",
-                "Username or password doesn't match",
-                request.getRequestURI(),
-                Map.of("user", ex.getMessage())
-        );
-    }
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<@NonNull ErrorDTO>  handleBadCredentialsException (BadCredentialsException ex, HttpServletRequest request)
@@ -103,6 +95,18 @@ public class GlobalExceptionHandler {
                 HttpStatus.UNAUTHORIZED,
                 "Invalid Refresh Token",
                 "Refresh Token is invalid.",
+                request.getRequestURI(),
+                Map.of("token", ex.getMessage())
+        );
+    }
+
+    @ExceptionHandler({ExpiredJwtException.class, SignatureException.class, MalformedJwtException.class})
+    public ResponseEntity<@NonNull ErrorDTO>  handleJwtException (Exception ex, HttpServletRequest request)
+    {
+        return buildErrorResponse(
+                HttpStatus.UNAUTHORIZED,
+                "Invalid JWT Token",
+                "JWT token is invalid or expired.",
                 request.getRequestURI(),
                 Map.of("token", ex.getMessage())
         );
