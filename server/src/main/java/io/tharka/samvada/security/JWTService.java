@@ -45,7 +45,7 @@ public class JWTService {
     }
 
 
-    public String extractUserId(String token) {
+    String extractUserId(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -64,7 +64,7 @@ public class JWTService {
     }
 
 
-    public boolean validateToken(String userId, String token, UserPrincipal userDetails) {
+    boolean validateToken(String userId, String token, UserPrincipal userDetails) {
         return (userId.equals(userDetails.getId()) && !isTokenExpired(token));
     }
 
