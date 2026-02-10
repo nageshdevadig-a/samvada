@@ -1,7 +1,6 @@
 package io.tharka.samvada.security;
 
 
-import io.tharka.samvada.core.exception.InvalidRefreshTokenException;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

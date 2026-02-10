@@ -5,7 +5,7 @@ spring:
 #  Data Behaviour
   data:
     mongodb:
-      auto-index-creation: true
+      auto-index-creation: false
   #  MongoDB Configuration
   mongodb:
     uri: mongodb://root:password%40123@127.0.0.1:27017/samvada_db?authSource=admin
