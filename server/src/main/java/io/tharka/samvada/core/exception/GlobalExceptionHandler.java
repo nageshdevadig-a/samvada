@@ -89,7 +89,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidRefreshTokenException.class)
-    public ResponseEntity<@NonNull ErrorDTO>  handleRefreshTokenException (BadCredentialsException ex, HttpServletRequest request)
+    public ResponseEntity<@NonNull ErrorDTO>  handleRefreshTokenException (InvalidRefreshTokenException ex, HttpServletRequest request)
     {
         return buildErrorResponse(
                 HttpStatus.UNAUTHORIZED,
