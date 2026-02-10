@@ -1,11 +1,11 @@
 package io.tharka.samvada.auth;
 
 import io.tharka.samvada.core.validation.ValidIdentity;
-import io.tharka.samvada.user.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import io.tharka.samvada.user.User;
 
 public class AuthDTOs {
     /*
@@ -59,5 +59,12 @@ public class AuthDTOs {
             );
         }
     }
+
+    public record AccessToken(
+            @NotBlank
+            String refreshToken,
+            @NotBlank
+            String jwtToken
+    ){}
 
 }
