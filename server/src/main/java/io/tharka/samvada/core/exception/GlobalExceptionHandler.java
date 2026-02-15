@@ -4,136 +4,77 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.jspecify.annotations.Nullable;
+import org.springframework.http.*;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import lombok.NonNull;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
+    // General exception handler
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<@NonNull ErrorDTO> handleGeneralException(Exception ex, HttpServletRequest request) {
-
-        return buildErrorResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                "Internal Server Error",
-                "An unexpected error occurred.",
-                request.getRequestURI(),
-                Map.of("server", ex.getMessage())
-        );
+    public ProblemDetail handleGeneralException() {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR,"An unexpected error occurred");
+        problemDetail.setTitle("Internal Server Error");
+        return problemDetail;
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<@NonNull ErrorDTO> handleValidationExceptions(MethodArgumentNotValidException ex, HttpServletRequest request)
-    {
+    // Security & Authentication
+    @ExceptionHandler({
+            ExpiredJwtException.class,
+            SignatureException.class,
+            MalformedJwtException.class,
+            BadCredentialsException.class,
+            InvalidRefreshTokenException.class,
+    })
+    public ProblemDetail buildAuthErrors() {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED,"Your Session is invalid or expired. Please login again.");
+        problemDetail.setTitle("Authentication Failed");
+        return problemDetail;
+    }
+
+    // Validation and User related exceptions
+
+    @Override
+    protected @Nullable ResponseEntity<@NonNull Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         Map<String, String> errors = new HashMap<>();
 
         ex.getBindingResult().getFieldErrors().forEach(error ->
                 errors.put(error.getField(), error.getDefaultMessage())
         );
-
-        return buildErrorResponse(
-                HttpStatus.BAD_REQUEST,
-                "Validation Failed",
-                "Invalid Input Data",
-                request.getRequestURI(),
-                errors
-        );
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,"Invalid Input");
+        problemDetail.setProperty("errors", errors);
+        problemDetail.setTitle("Bad Request");
+        return new ResponseEntity<>(problemDetail,HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<@NonNull ErrorDTO> handleUserAlreadyExistsException(UserAlreadyExistsException ex, HttpServletRequest request)
+    public ProblemDetail handleUserAlreadyExistsException(UserAlreadyExistsException ex)
     {
-        return buildErrorResponse(
-                HttpStatus.CONFLICT,
-                "User Already Exists",
-                "The identifier provided is already exists.",
-                request.getRequestURI(),
-                Map.of("user", ex.getMessage())
-        );
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,ex.getMessage());
+        problemDetail.setTitle("Conflict");
+        return  problemDetail;
     }
 
     @ExceptionHandler({UserNotFoundException.class  , UsernameNotFoundException.class})
-    public ResponseEntity<@NonNull ErrorDTO> handleUserNotFoundException(UserNotFoundException ex, HttpServletRequest request)
+    public ProblemDetail handleUserNotFoundException()
     {
-        return buildErrorResponse(
-                HttpStatus.NOT_FOUND,
-                "User Not Found",
-                "Username or password doesn't match",
-                request.getRequestURI(),
-                Map.of("user", ex.getMessage())
-        );
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND,"Username or password doesn't match");
+        problemDetail.setTitle("Conflict");
+        return  problemDetail;
     }
 
-
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<@NonNull ErrorDTO>  handleBadCredentialsException (BadCredentialsException ex, HttpServletRequest request)
-    {
-        return buildErrorResponse(
-                HttpStatus.NOT_FOUND,
-                "Bad Credentials",
-                "Invalid username or password.",
-                request.getRequestURI(),
-                Map.of("user", ex.getMessage())
-        );
-    }
-
-    @ExceptionHandler(InvalidRefreshTokenException.class)
-    public ResponseEntity<@NonNull ErrorDTO>  handleRefreshTokenException (InvalidRefreshTokenException ex, HttpServletRequest request)
-    {
-        return buildErrorResponse(
-                HttpStatus.UNAUTHORIZED,
-                "Invalid Refresh Token",
-                "Refresh Token is invalid.",
-                request.getRequestURI(),
-                Map.of("token", ex.getMessage())
-        );
-    }
-
-    @ExceptionHandler({ExpiredJwtException.class, SignatureException.class, MalformedJwtException.class})
-    public ResponseEntity<@NonNull ErrorDTO>  handleJwtException (Exception ex, HttpServletRequest request)
-    {
-        return buildErrorResponse(
-                HttpStatus.UNAUTHORIZED,
-                "Invalid JWT Token",
-                "JWT token is invalid or expired.",
-                request.getRequestURI(),
-                Map.of("token", ex.getMessage())
-        );
-    }
-
-
-    private  ResponseEntity<@NonNull ErrorDTO> buildErrorResponse(
-            HttpStatus status,
-            String title,
-            String detail,
-            String path,
-            Map<String, String> errors
-            )
-    {
-        ErrorDTO errorBody = ErrorDTO.builder()
-                .title(title)
-                .status(status.value())
-                .detail(detail)
-                .instance(path)
-                .timestamp(Instant.now())
-                .errors(errors)
-                .build();
-
-        return ResponseEntity
-                .status(status)
-                .contentType(MediaType.APPLICATION_PROBLEM_JSON)
-                .body(errorBody);
-    }
 
 }
