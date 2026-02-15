@@ -13,7 +13,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public boolean deleteUser(String userId)
+    boolean deleteUser(String userId)
     {
         if(ObjectId.isValid(userId))
         {

@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,8 +30,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if(!ObjectId.isValid(id)){
             throw new UsernameNotFoundException("Invalid user id");
         }
-        Optional<User> userEntity = userRepository.findById(new ObjectId(id));
-        User user = userEntity.orElse(null);
+        User user = userRepository.findById(new ObjectId(id)).orElse(null);
         return checkUser(user);
     }
 

@@ -1,5 +1,7 @@
-package io.tharka.samvada.security;
+package io.tharka.samvada.config;
 
+import io.tharka.samvada.security.JwtAuthFilter;
+import io.tharka.samvada.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +22,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final UserDetailsServiceImpl userDetailsService;
     private final JwtAuthFilter jwtAuthFilter;
 
     @Bean
@@ -41,7 +42,7 @@ public class SecurityConfig {
 
 
     @Bean
-    public AuthenticationProvider authenticationProvider()
+    public AuthenticationProvider authenticationProvider(UserDetailsServiceImpl userDetailsService)
     {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
