@@ -39,7 +39,7 @@ public class AuthController
     }
 
     @GetMapping("/refresh_token")
-    public ResponseEntity<?> refresh(
+    public ResponseEntity<?> refreshToken(
             @CookieValue(name = "rf_token", required = false) String refreshToken
     )
     {

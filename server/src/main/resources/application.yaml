@@ -5,12 +5,19 @@ spring:
 #  Data Behaviour
   data:
     mongodb:
-      auto-index-creation: false
+      auto-index-creation: true
+
+#    redis:
+#      url: redis://${REDIS_USR:}:${REDIS_PW:password123}@localhost:6379/0
+
   #  MongoDB Configuration
   mongodb:
-    uri: mongodb://root:password%40123@127.0.0.1:27017/samvada_db?authSource=admin
+    uri: mongodb://${MONGO_USR:root}:${MONGO_PW:password%40123}@127.0.0.1:27017/samvada_db?authSource=admin
+
+
 jwt:
   secret: ${JWT_SECRET:this_is_just_for_local_dev_testing_12345}
+
 #logging:
 #  level:
 #    org:

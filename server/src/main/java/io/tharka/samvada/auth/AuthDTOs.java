@@ -6,17 +6,24 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import io.tharka.samvada.user.User;
-
+/**
+ *
+ * <p></p>This class is useful for parsing requests into objects and passing them for further operations.</p></br>
+ * Records in AuthDTOs are:
+ * <ul>
+ *     <li>{@link Create}</li>
+ *     <li>{@link Login}</li>
+ *     <li>{@link AccessToken}</li>
+ * </ul>
+ */
 public class AuthDTOs {
-    /*
+    /**
      * This record is used for creating a new user.
-     * Record Args:
-     * - name: Full name of the user
-     * - username: Unique username for the user (alphanumeric and underscores only)
-     * - email: Valid email address of the user
-     * - password: Password for the user account (8-100 characters)
-     *
-     * */
+     * @param name Full name of the user
+     * @param username Unique username for the user (alphanumeric and underscores only)
+     * @param email Valid email address of the user
+     * @param password Password for the user account (8-100 characters)
+     */
     public record Create(
             @NotBlank
             String name,
@@ -36,12 +43,10 @@ public class AuthDTOs {
     ){}
 
 
-    /*
+    /**
      * This record is used for user login.
-     * Record Args:
-     * - usernameOrEmail: Username or email of the user
-     * - password: Password for the user account
-     *
+     * @param usernameOrEmail: Username or email of the user
+     * @param password: Password for the user account
      * */
     public record Login(
             @NotBlank
@@ -60,6 +65,12 @@ public class AuthDTOs {
         }
     }
 
+    /**
+     * This record is used to return the tokens from service layer to controller
+     * to form the http header of the cookie.
+     * @param refreshToken
+     * @param jwtToken
+     */
     public record AccessToken(
             @NotBlank
             String refreshToken,

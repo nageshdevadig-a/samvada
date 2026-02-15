@@ -37,16 +37,32 @@ public class AuthService
     private final JWTService jwtService;
 
 
-
+    /**
+     * It allows to create new users after it checks for the below conditions.
+     * <p>
+     * <ul>
+     * <li>1. The user already exists in DB and status is active.</li>
+     * <li>2. The user exists in DB but status is inactive.</li>
+     * <li>3. The user request is new and have to persist the user record in DB.</li>
+     * </ul>
+     * </p>
+     * @param user The user details to be registered.
+     * @return {@code User} entity
+     */
     User register(AuthDTOs.Create user)
     {
+        // TODO : first front end sends email and full name. then we send a emai to the email. of user is already exists then we send a mail as
+        //  "Hello USERNAME,
+        //  We received a request to create a new account with Samvada, but a user with this email already exists.
+        //  Click below to log into your existing account.
+        //  Log In(email id filled but user has to enter the password)
+        //  To create a new account, click here.(user has to enter a new email id else fall back)rate limit to create new user with 3 for a day.
+        //  If your request to create a new account was done in error, you can safely ignore this message.
+        //  Thank you,
+        //  The samvada Team"
+        //  Dont throw user already exists exception. if user verify email successfully then we allow user to crate user name and password. if username already exists we say username is invalid
+        //  after successfully user creation we send jwt cookie with access token and refresh token cookie.
 
-//        System has to check for the 3 conditions before creating a new user in database.
-//        1. The user already exists in DB and status is active.
-//        2. The user exists in DB but status is inactive.
-//        3. The user request is new and have to persist the user record in DB.
-
-        // Ensure username or email id not exists in DB before creating a new user.
         Optional<User> existingUser = Optional.ofNullable(
                 userRepository.findByUsernameOrEmail(user.username(), user.email()));
 
