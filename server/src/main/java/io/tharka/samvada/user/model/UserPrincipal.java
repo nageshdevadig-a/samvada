@@ -41,7 +41,7 @@ public class UserPrincipal implements UserDetails {
         return user.getUsername();
     }
 
-    public String getId() { return user.getId().toHexString(); }
-
     public String getName() { return user.getName(); }
+
+    public String getEmail() { return user.getEmail(); }
 }

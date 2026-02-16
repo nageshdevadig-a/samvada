@@ -5,7 +5,6 @@ import io.tharka.samvada.user.entity.User;
 import io.tharka.samvada.user.repository.UserRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.bson.types.ObjectId;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -22,24 +21,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @NonNull
     public UserDetails loadUserByUsername(@NonNull String usernameOrEmail) throws UsernameNotFoundException
     {
-        User user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail);
-        return checkUser(user);
-    }
-
-    public UserPrincipal loadUserByUserId(String id) throws UsernameNotFoundException
-    {
-        if(!ObjectId.isValid(id)){
-            throw new UsernameNotFoundException("Invalid user id");
-        }
-        User user = userRepository.findById(new ObjectId(id)).orElse(null);
+        User user = (userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail))
+                .orElseThrow(() -> new UsernameNotFoundException(" User not found"));
         return checkUser(user);
     }
 
     private UserPrincipal checkUser(User user)
     {
-        if (user == null) {
-            throw new UsernameNotFoundException(" User not found");
-        }
         if(!user.isActive())
         {
             user.setActive(true);
