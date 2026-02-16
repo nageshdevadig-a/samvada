@@ -13,7 +13,7 @@ import io.tharka.samvada.core.security.service.JWTService;
 import io.tharka.samvada.user.model.UserPrincipal;
 import io.tharka.samvada.user.entity.User;
 import io.tharka.samvada.user.repository.UserRepository;
-import org.bson.types.ObjectId;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -41,6 +41,8 @@ public class AuthService
     private final BCryptPasswordEncoder passwordEncoder;
     private final JWTService jwtService;
 
+    @Value("${app.security.cookie-secure:true}")
+    private boolean isSecure;
 
     /**
      * It allows to create new users after it checks for the below conditions.
@@ -68,8 +70,7 @@ public class AuthService
         //  Dont throw user already exists exception. if user verify email successfully then we allow user to crate user name and password. if username already exists we say username is invalid
         //  after successfully user creation we send jwt cookie with access token and refresh token cookie.
 
-        Optional<User> existingUser = Optional.ofNullable(
-                userRepository.findByUsernameOrEmail(user.username(), user.email()));
+        Optional<User> existingUser = userRepository.findByUsernameOrEmail(user.username(), user.email());
 
         if (existingUser.isPresent())
         {
@@ -114,7 +115,7 @@ public class AuthService
             }
             UserPrincipal userPrincipal = (UserPrincipal) Objects.requireNonNull(authentication.getPrincipal());
             return new TokenResponse(rfCookieBuilder(
-                    userPrincipal.getId()),
+                    userPrincipal.getEmail()),
                     jwtCookieBuilder(jwtService.generateToken(userPrincipal))
             );
         }
@@ -125,7 +126,7 @@ public class AuthService
     }
 
 
-    public TokenResponse rfTokenVerify(String refreshToken)
+    public TokenResponse rfTokenVerify(String refreshToken, String jwtToken)
     {
         RefreshToken rfToken =  refreshTokenRepository.findByToken(refreshToken)
                 .orElseThrow(()-> new InvalidRefreshTokenException("Invalid token. Please Login again"));
@@ -134,10 +135,11 @@ public class AuthService
             throw new InvalidRefreshTokenException("Session Expired. Please Login again");
         }
         refreshTokenRepository.delete(rfToken);
-        UserPrincipal userPrincipal = new UserPrincipal((userRepository.findById(new ObjectId(rfToken.getUserId())))
+        UserPrincipal userPrincipal = new UserPrincipal((userRepository.findByEmail(rfToken.getUserEmail()))
                 .orElseThrow(() -> new UserNotFoundException("User not found for the given refresh token.")));
+        jwtService.isSignatureValid(jwtToken);
         return new TokenResponse(rfCookieBuilder(
-                userPrincipal.getId()),
+                userPrincipal.getEmail()),
                 jwtCookieBuilder(jwtService.generateToken(userPrincipal))
         );
     }
@@ -146,29 +148,29 @@ public class AuthService
     {
         ResponseCookie cookie =  ResponseCookie.from("access_token",jwt)
                 .httpOnly(true)
-                .secure(true)
+                .secure(isSecure)
                 .path("/")
                 .maxAge(3600)
-                .sameSite("Strict")
+                .sameSite("None")
                 .build();
         return cookie.toString();
     }
 
 
-    private String rfCookieBuilder(String userId)
+    private String rfCookieBuilder(String userEmail)
     {
         RefreshToken refreshTokenEntity = RefreshToken.builder()
                 .token(UUID.randomUUID().toString())
-                .userId(userId)
+                .userEmail(userEmail)
                 .build();
         refreshTokenRepository.save(refreshTokenEntity);
 
         ResponseCookie cookie =  ResponseCookie.from("rf_token",refreshTokenEntity.getToken())
                 .httpOnly(true)
-                .secure(true)
+                .secure(isSecure)
                 .path("/api/v1/auth/refresh_token")
                 .maxAge(TimeUnit.DAYS.toSeconds(7))
-                .sameSite("Strict")
+                .sameSite("None")
                 .build();
         return cookie.toString();
     }

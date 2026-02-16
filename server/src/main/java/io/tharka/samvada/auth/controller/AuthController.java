@@ -25,7 +25,7 @@ public class AuthController
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(@Valid @RequestBody UserCreateRequest user)
     {
-        TokenResponse tokens = authService.verify(UserLoginRequest.fromEntity(authService.register(user)));
+        TokenResponse tokens = authService.verify(UserLoginRequest.from(authService.register(user).getEmail(),user.password()));
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header(HttpHeaders.SET_COOKIE, tokens.jwtToken())
                 .header(HttpHeaders.SET_COOKIE, tokens.refreshToken())
@@ -44,10 +44,11 @@ public class AuthController
 
     @GetMapping("/refresh_token")
     public ResponseEntity<?> refreshToken(
-            @CookieValue(name = "rf_token", required = false) String refreshToken
+            @CookieValue(name = "rf_token") String refreshToken,
+            @CookieValue(name = "access_token") String jwtToken
     )
     {
-        TokenResponse tokens = authService.rfTokenVerify(refreshToken);
+        TokenResponse tokens = authService.rfTokenVerify(refreshToken, jwtToken);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, tokens.jwtToken())
