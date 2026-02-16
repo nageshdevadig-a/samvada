@@ -1,7 +1,8 @@
-package io.tharka.samvada.security;
+package io.tharka.samvada.auth.service;
 
-import io.tharka.samvada.user.User;
-import io.tharka.samvada.user.UserRepository;
+import io.tharka.samvada.user.model.UserPrincipal;
+import io.tharka.samvada.user.entity.User;
+import io.tharka.samvada.user.repository.UserRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;

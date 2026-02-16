@@ -1,5 +1,6 @@
-package io.tharka.samvada.user;
+package io.tharka.samvada.user.repository;
 
+import io.tharka.samvada.user.entity.User;
 import lombok.NonNull;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Repository;
