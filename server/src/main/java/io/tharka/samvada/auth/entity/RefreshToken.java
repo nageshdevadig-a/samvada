@@ -1,4 +1,4 @@
-package io.tharka.samvada.auth;
+package io.tharka.samvada.auth.entity;
 
 
 import lombok.*;

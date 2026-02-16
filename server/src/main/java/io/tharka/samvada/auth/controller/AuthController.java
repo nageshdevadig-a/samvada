@@ -1,6 +1,10 @@
-package io.tharka.samvada.auth;
+package io.tharka.samvada.auth.controller;
 
 
+import io.tharka.samvada.auth.dto.TokenResponse;
+import io.tharka.samvada.auth.dto.UserCreateRequest;
+import io.tharka.samvada.auth.dto.UserLoginRequest;
+import io.tharka.samvada.auth.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -19,9 +23,9 @@ public class AuthController
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signUp(@Valid @RequestBody AuthDTOs.Create user)
+    public ResponseEntity<?> signUp(@Valid @RequestBody UserCreateRequest user)
     {
-        AuthDTOs.AccessToken tokens = authService.verify(AuthDTOs.Login.fromEntity(authService.register(user)));
+        TokenResponse tokens = authService.verify(UserLoginRequest.fromEntity(authService.register(user)));
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header(HttpHeaders.SET_COOKIE, tokens.jwtToken())
                 .header(HttpHeaders.SET_COOKIE, tokens.refreshToken())
@@ -29,9 +33,9 @@ public class AuthController
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody AuthDTOs.Login user)
+    public ResponseEntity<?> login(@Valid @RequestBody UserLoginRequest user)
     {
-        AuthDTOs.AccessToken tokens = authService.verify(user);
+        TokenResponse tokens = authService.verify(user);
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, tokens.jwtToken())
                 .header(HttpHeaders.SET_COOKIE, tokens.refreshToken())
@@ -43,8 +47,7 @@ public class AuthController
             @CookieValue(name = "rf_token", required = false) String refreshToken
     )
     {
-
-        AuthDTOs.AccessToken tokens = authService.rfTokenVerify(refreshToken);
+        TokenResponse tokens = authService.rfTokenVerify(refreshToken);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, tokens.jwtToken())

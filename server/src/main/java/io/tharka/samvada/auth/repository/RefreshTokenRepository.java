@@ -1,6 +1,7 @@
-package io.tharka.samvada.auth;
+package io.tharka.samvada.auth.repository;
 
 
+import io.tharka.samvada.auth.entity.RefreshToken;
 import lombok.NonNull;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;

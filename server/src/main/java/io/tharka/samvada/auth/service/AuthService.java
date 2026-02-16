@@ -1,13 +1,18 @@
-package io.tharka.samvada.auth;
+package io.tharka.samvada.auth.service;
 
 
-import io.tharka.samvada.core.exception.InvalidRefreshTokenException;
-import io.tharka.samvada.core.exception.UserAlreadyExistsException;
-import io.tharka.samvada.core.exception.UserNotFoundException;
-import io.tharka.samvada.security.JWTService;
-import io.tharka.samvada.security.UserPrincipal;
-import io.tharka.samvada.user.User;
-import io.tharka.samvada.user.UserRepository;
+import io.tharka.samvada.auth.dto.TokenResponse;
+import io.tharka.samvada.auth.dto.UserCreateRequest;
+import io.tharka.samvada.auth.dto.UserLoginRequest;
+import io.tharka.samvada.auth.entity.RefreshToken;
+import io.tharka.samvada.auth.repository.RefreshTokenRepository;
+import io.tharka.samvada.core.exception.base.InvalidRefreshTokenException;
+import io.tharka.samvada.core.exception.base.UserAlreadyExistsException;
+import io.tharka.samvada.core.exception.base.UserNotFoundException;
+import io.tharka.samvada.core.security.service.JWTService;
+import io.tharka.samvada.user.model.UserPrincipal;
+import io.tharka.samvada.user.entity.User;
+import io.tharka.samvada.user.repository.UserRepository;
 import org.bson.types.ObjectId;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -49,7 +54,7 @@ public class AuthService
      * @param user The user details to be registered.
      * @return {@code User} entity
      */
-    User register(AuthDTOs.Create user)
+    public User register(UserCreateRequest user)
     {
         // TODO : first front end sends email and full name. then we send a emai to the email. of user is already exists then we send a mail as
         //  "Hello USERNAME,
@@ -97,7 +102,7 @@ public class AuthService
 
 
 
-    AuthDTOs.AccessToken verify(AuthDTOs.Login user)
+    public TokenResponse verify(UserLoginRequest user)
     {
         try {
             Authentication authentication =
@@ -108,7 +113,7 @@ public class AuthService
                 throw new UserNotFoundException("Invalid username or password.");
             }
             UserPrincipal userPrincipal = (UserPrincipal) Objects.requireNonNull(authentication.getPrincipal());
-            return new AuthDTOs.AccessToken(rfCookieBuilder(
+            return new TokenResponse(rfCookieBuilder(
                     userPrincipal.getId()),
                     jwtCookieBuilder(jwtService.generateToken(userPrincipal))
             );
@@ -120,7 +125,7 @@ public class AuthService
     }
 
 
-    AuthDTOs.AccessToken rfTokenVerify(String refreshToken)
+    public TokenResponse rfTokenVerify(String refreshToken)
     {
         RefreshToken rfToken =  refreshTokenRepository.findByToken(refreshToken)
                 .orElseThrow(()-> new InvalidRefreshTokenException("Invalid token. Please Login again"));
@@ -129,9 +134,9 @@ public class AuthService
             throw new InvalidRefreshTokenException("Session Expired. Please Login again");
         }
         refreshTokenRepository.delete(rfToken);
-        UserPrincipal userPrincipal = new UserPrincipal(userRepository.findById(new ObjectId(rfToken.getUserId()))
+        UserPrincipal userPrincipal = new UserPrincipal((userRepository.findById(new ObjectId(rfToken.getUserId())))
                 .orElseThrow(() -> new UserNotFoundException("User not found for the given refresh token.")));
-        return new AuthDTOs.AccessToken(rfCookieBuilder(
+        return new TokenResponse(rfCookieBuilder(
                 userPrincipal.getId()),
                 jwtCookieBuilder(jwtService.generateToken(userPrincipal))
         );
