@@ -18,6 +18,10 @@ spring:
 jwt:
   secret: ${JWT_SECRET:this_is_just_for_local_dev_testing_12345}
 
+app:
+  security:
+    cookie-secure: false
+
 #logging:
 #  level:
 #    org:
