@@ -1,6 +1,9 @@
-package io.tharka.samvada.security;
+package io.tharka.samvada.core.security.filter;
 
 
+import io.tharka.samvada.auth.service.UserDetailsServiceImpl;
+import io.tharka.samvada.core.security.service.JWTService;
+import io.tharka.samvada.user.model.UserPrincipal;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,7 +23,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
-public class JwtAuthFilter extends OncePerRequestFilter {
+public class JwtFilter extends OncePerRequestFilter {
 
     private final JWTService jwtService;
     private final UserDetailsServiceImpl userDetailsService;

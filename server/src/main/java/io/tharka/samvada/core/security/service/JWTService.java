@@ -1,10 +1,11 @@
-package io.tharka.samvada.security;
+package io.tharka.samvada.core.security.service;
 
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.tharka.samvada.user.model.UserPrincipal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +45,7 @@ public class JWTService {
     }
 
 
-    String extractUserId(String token) {
+    public String extractUserId(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -63,7 +64,7 @@ public class JWTService {
     }
 
 
-    boolean validateToken(String userId, String token, UserPrincipal userDetails) {
+    public boolean validateToken(String userId, String token, UserPrincipal userDetails) {
         return (userId.equals(userDetails.getId()) && !isTokenExpired(token));
     }
 
