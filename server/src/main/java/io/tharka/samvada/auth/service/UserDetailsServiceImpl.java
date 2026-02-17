@@ -28,11 +28,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     private UserPrincipal checkUser(User user)
     {
-        if(!user.isActive())
-        {
-            user.setActive(true);
-            userRepository.save(user);
-        }
         return new UserPrincipal(user);
     }
 

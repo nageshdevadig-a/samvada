@@ -15,6 +15,7 @@ import io.tharka.samvada.user.entity.User;
 import io.tharka.samvada.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -106,23 +107,35 @@ public class AuthService
     public TokenResponse verify(UserLoginRequest user)
     {
         try {
-            Authentication authentication =
-                    authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                            user.usernameOrEmail(),
-                            user.password()));
-            if (!authentication.isAuthenticated()) {
-                throw new UserNotFoundException("Invalid username or password.");
-            }
-            UserPrincipal userPrincipal = (UserPrincipal) Objects.requireNonNull(authentication.getPrincipal());
-            return new TokenResponse(rfCookieBuilder(
-                    userPrincipal.getEmail()),
-                    jwtCookieBuilder(jwtService.generateToken(userPrincipal.getEmail()))
-            );
+            return authenticate(user);
+        }
+        catch (AccountExpiredException e){
+            User userEntity = userRepository.findByUsernameOrEmail(user.usernameOrEmail(), user.usernameOrEmail())
+                    .orElseThrow(()-> new BadCredentialsException("Invalid username or password."));
+            userEntity.setActive(true);
+            userEntity.setExpiresAt(null);
+            userRepository.save(userEntity);
+            return authenticate(user);
         }
         catch (Exception e) {
             throw new BadCredentialsException("Invalid username or password.");
         }
+    }
 
+    private TokenResponse authenticate(UserLoginRequest user)
+    {
+        Authentication authentication =
+                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                        user.usernameOrEmail(),
+                        user.password()));
+        if (!authentication.isAuthenticated()) {
+            throw new UserNotFoundException("Invalid username or password.");
+        }
+        UserPrincipal userPrincipal = (UserPrincipal) Objects.requireNonNull(authentication.getPrincipal());
+        return new TokenResponse(rfCookieBuilder(
+                userPrincipal.getEmail()),
+                jwtCookieBuilder(jwtService.generateToken(userPrincipal.getEmail()))
+        );
     }
 
 
