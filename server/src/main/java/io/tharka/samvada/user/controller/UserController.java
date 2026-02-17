@@ -1,8 +1,6 @@
 package io.tharka.samvada.user.controller;
 
-import io.tharka.samvada.user.dto.UserDeleteRequest;
-import io.tharka.samvada.user.dto.UserDetailsUpdate;
-import io.tharka.samvada.user.dto.UserResponse;
+import io.tharka.samvada.user.dto.*;
 import io.tharka.samvada.user.entity.User;
 import io.tharka.samvada.user.model.UserPrincipal;
 import io.tharka.samvada.user.repository.UserRepository;
@@ -51,6 +49,17 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(userService.updateUserDetails(user, userPrincipal));
     }
+
+    @PutMapping("/password")
+    public ResponseEntity<?> updatePassword(@Valid @RequestBody UserPasswordUpdate passwordRequest,
+                                            @AuthenticationPrincipal UserPrincipal userPrincipal)
+    {
+        if(userService.updatePassword(passwordRequest, userPrincipal))
+            return ResponseEntity.status(HttpStatus.OK).build();
+        else
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Current Password");
+    }
+
 
 
 

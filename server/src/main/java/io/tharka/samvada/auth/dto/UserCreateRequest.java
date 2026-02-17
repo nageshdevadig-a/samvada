@@ -18,8 +18,7 @@ public record UserCreateRequest(
         @NotBlank
         @Pattern(
                 regexp = "^[a-zA-Z][a-zA-Z\\s]*$",
-                message = "Name must start with a letter and contain only alphabets and spaces"
-        )
+                message = "Name must start with a letter and contain only alphabets and spaces")
         String name,
 
 
@@ -27,8 +26,7 @@ public record UserCreateRequest(
         @Size(min = 3,max = 20)
         @Pattern(
                 regexp = "^[a-z][a-z0-9_]*$",
-                message = "Username can only contain alphanumeric characters and underscores"
-        )
+                message = "Username can only contain alphanumeric characters and underscores")
         String username,
 
         @NotBlank @Email

@@ -1,13 +1,10 @@
 package io.tharka.samvada.user.service;
 
 import io.tharka.samvada.core.exception.base.UserNotFoundException;
-import io.tharka.samvada.user.dto.UserDeleteRequest;
-import io.tharka.samvada.user.dto.UserDetailsUpdate;
-import io.tharka.samvada.user.dto.UserResponse;
+import io.tharka.samvada.user.dto.*;
 import io.tharka.samvada.user.entity.User;
 import io.tharka.samvada.user.model.UserPrincipal;
 import io.tharka.samvada.user.repository.UserRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -49,5 +46,17 @@ public class UserService {
     }
 
 
+    public boolean updatePassword(UserPasswordUpdate passwordRequest, UserPrincipal userPrincipal)
+    {
+        User userEntity = userRepository.findByEmail(userPrincipal.getEmail())
+                .orElseThrow(()-> new UserNotFoundException("User not found"));
+        if(passwordEncoder.matches(passwordRequest.currentPassword(),userEntity.getPassword()))
+        {
+            userEntity.setPassword(passwordEncoder.encode(passwordRequest.newPassword()));
+            userRepository.save(userEntity);
+            return true;
+        }
+        return false;
+    }
 }
 
