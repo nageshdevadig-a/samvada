@@ -39,10 +39,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             BadCredentialsException.class,
             InvalidRefreshTokenException.class,
     })
-    public ProblemDetail buildAuthErrors() {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED,"Your Session is invalid or expired. Please login again.");
+    public ProblemDetail buildAuthErrors(Exception exception) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
         problemDetail.setTitle("Authentication Failed");
+        if (exception instanceof BadCredentialsException)
+            problemDetail.setDetail("Invalid username or password");
+        else
+            problemDetail.setDetail("Your Session is invalid or expired. Please login again.");
         return problemDetail;
+
     }
 
     // Validation and User related exceptions
