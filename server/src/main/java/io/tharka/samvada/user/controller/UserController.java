@@ -1,6 +1,7 @@
 package io.tharka.samvada.user.controller;
 
 import io.tharka.samvada.user.dto.UserDeleteRequest;
+import io.tharka.samvada.user.dto.UserDetailsUpdate;
 import io.tharka.samvada.user.dto.UserResponse;
 import io.tharka.samvada.user.entity.User;
 import io.tharka.samvada.user.model.UserPrincipal;
@@ -30,7 +31,8 @@ public class UserController {
         User user = userRepository.findByEmail(userPrincipal.getEmail())
                 .orElseThrow( ()-> new BadCredentialsException("Invalid username or password"));
 
-        return ResponseEntity.status(HttpStatus.OK).body(new UserResponse(user.getUsername(), user.getEmail(), user.getName()));
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(new UserResponse(user.getUsername(), user.getEmail(), user.getName()));
     }
 
     @PostMapping("/deactivate")
@@ -40,6 +42,14 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         else
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    @PutMapping
+    public ResponseEntity<?> updateUser(@Valid @RequestBody UserDetailsUpdate user,
+                                        @AuthenticationPrincipal UserPrincipal userPrincipal)
+    {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userService.updateUserDetails(user, userPrincipal));
     }
 
 
