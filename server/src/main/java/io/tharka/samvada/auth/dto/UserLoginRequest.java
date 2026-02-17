@@ -1,6 +1,7 @@
 package io.tharka.samvada.auth.dto;
 
 import io.tharka.samvada.core.validation.annotation.ValidIdentity;
+import io.tharka.samvada.core.validation.annotation.ValidPassword;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -16,16 +17,11 @@ public record UserLoginRequest(
        @ValidIdentity
        String usernameOrEmail,
 
-       @NotBlank @Size(min = 8, max = 100)
+       @NotBlank
+       @ValidPassword
        String password
 )
 {
-//    public static UserLoginRequest fromEntity(User user) {
-//        return new UserLoginRequest(
-//                user.getEmail(),
-//                user.getPassword()
-//        );
-//    }
     public static UserLoginRequest from(String email, String password) {
         return new UserLoginRequest(
                 email,
