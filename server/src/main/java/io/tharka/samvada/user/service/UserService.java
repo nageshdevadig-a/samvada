@@ -23,7 +23,7 @@ public class UserService {
     {
         User userEntity = userRepository.findByEmail(user.email())
                 .orElseThrow(()-> new UserNotFoundException("User not found"));
-        if (userEntity.getPassword().equals(passwordEncoder.encode(user.password())))
+        if (passwordEncoder.matches(user.password(),userEntity.getPassword()))
         {
         userEntity.setActive(false);
         userEntity.setExpiresAt(Instant.now().plus(30, ChronoUnit.DAYS));

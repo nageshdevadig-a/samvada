@@ -34,7 +34,7 @@ public class UserController {
     }
 
     @PostMapping("/deactivate")
-    public  ResponseEntity<?> deactivateUser(@Valid @RequestAttribute UserDeleteRequest user)
+    public  ResponseEntity<?> deactivateUser(@Valid @RequestBody UserDeleteRequest user)
     {
         if(userService.disableUser(user))
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
