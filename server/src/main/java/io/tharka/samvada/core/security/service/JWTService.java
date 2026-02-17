@@ -21,16 +21,11 @@ public class JWTService {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    public String generateToken(UserPrincipal principal) {
-
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("username", principal.getUsername());
-        claims.put("fullName", principal.getName());
+    public String generateToken(String userEmail) {
 
         return Jwts.builder()
                 .claims()
-                .add(claims)
-                .subject(principal.getId())
+                .subject(userEmail)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000))
                 .and()
@@ -45,7 +40,7 @@ public class JWTService {
     }
 
 
-    public String extractUserId(String token) {
+    public String extractUserEmail(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -64,8 +59,8 @@ public class JWTService {
     }
 
 
-    public boolean validateToken(String userId, String token, UserPrincipal userDetails) {
-        return (userId.equals(userDetails.getId()) && !isTokenExpired(token));
+    public boolean validateToken(String userEmail, String token, UserPrincipal userDetails) {
+        return (userEmail.equals(userDetails.getEmail()) && !isTokenExpired(token));
     }
 
     private boolean isTokenExpired(String token) {
@@ -74,5 +69,17 @@ public class JWTService {
 
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
+    }
+
+    /**
+     * Validates the signature of the provided JWT token. If the signature is invalid, it will throw a SignatureException.
+     * @param jwtToken The JWT token whose signature needs to be validated.
+     */
+    public void isSignatureValid(String jwtToken) {
+            Jwts
+                    .parser()
+                    .verifyWith(getSignKey())
+                    .build()
+                    .parseSignedClaims(jwtToken);
     }
 }

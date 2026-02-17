@@ -40,7 +40,9 @@ public class SecurityConfig {
                 // CSP & Other Security Header
                 .headers(headers -> headers
                         .contentSecurityPolicy(csp -> csp
-                                .policyDirectives("default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none';")
+                                .policyDirectives("default-src 'self'; " +
+                                        "frame-ancestors 'none'; " +
+                                        "object-src 'none';")
                         )
                 )
                 // Session & Authorization
