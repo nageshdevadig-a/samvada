@@ -35,7 +35,7 @@ public class User {
 
 
     @Builder.Default
-    private boolean active = true;
+    private boolean isActive = true;
 
     @Builder.Default
     private Set<Role> roles = new HashSet<>(Set.of(Role.ROLE_USER));
