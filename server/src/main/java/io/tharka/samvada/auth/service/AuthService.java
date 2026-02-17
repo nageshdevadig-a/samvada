@@ -116,7 +116,7 @@ public class AuthService
             UserPrincipal userPrincipal = (UserPrincipal) Objects.requireNonNull(authentication.getPrincipal());
             return new TokenResponse(rfCookieBuilder(
                     userPrincipal.getEmail()),
-                    jwtCookieBuilder(jwtService.generateToken(userPrincipal))
+                    jwtCookieBuilder(jwtService.generateToken(userPrincipal.getEmail()))
             );
         }
         catch (Exception e) {
@@ -135,17 +135,16 @@ public class AuthService
             throw new InvalidRefreshTokenException("Session Expired. Please Login again");
         }
         refreshTokenRepository.delete(rfToken);
-        UserPrincipal userPrincipal = new UserPrincipal((userRepository.findByEmail(rfToken.getUserEmail()))
-                .orElseThrow(() -> new UserNotFoundException("User not found for the given refresh token.")));
         jwtService.isSignatureValid(jwtToken);
         return new TokenResponse(rfCookieBuilder(
-                userPrincipal.getEmail()),
-                jwtCookieBuilder(jwtService.generateToken(userPrincipal))
+                rfToken.getUserEmail()),
+                jwtCookieBuilder(jwtService.generateToken(rfToken.getUserEmail()))
         );
     }
 
     private String jwtCookieBuilder(String jwt)
     {
+        // TODO change cookie name to __HOST-access_token to prevent the Cross Subdomain XSS attack
         ResponseCookie cookie =  ResponseCookie.from("access_token",jwt)
                 .httpOnly(true)
                 .secure(isSecure)
@@ -165,6 +164,7 @@ public class AuthService
                 .build();
         refreshTokenRepository.save(refreshTokenEntity);
 
+        // TODO change cookie name to __HOST-access_token to prevent the Cross Subdomain XSS attack
         ResponseCookie cookie =  ResponseCookie.from("rf_token",refreshTokenEntity.getToken())
                 .httpOnly(true)
                 .secure(isSecure)

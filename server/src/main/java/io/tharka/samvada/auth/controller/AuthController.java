@@ -42,7 +42,7 @@ public class AuthController
                 .build();
     }
 
-    @GetMapping("/refresh_token")
+    @PostMapping("/refresh_token")
     public ResponseEntity<?> refreshToken(
             @CookieValue(name = "rf_token") String refreshToken,
             @CookieValue(name = "access_token") String jwtToken

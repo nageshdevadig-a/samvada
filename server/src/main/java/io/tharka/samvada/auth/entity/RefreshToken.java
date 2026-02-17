@@ -20,7 +20,7 @@ public class RefreshToken {
     @Id
     private String token;
 
-    private String userId;
+    private String userEmail;
 
     @Builder.Default
     @Indexed(expireAfter = "0")

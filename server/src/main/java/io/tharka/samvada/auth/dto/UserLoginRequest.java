@@ -1,6 +1,6 @@
 package io.tharka.samvada.auth.dto;
 
-import io.tharka.samvada.core.validation.ValidIdentity;
+import io.tharka.samvada.core.validation.annotation.ValidIdentity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
