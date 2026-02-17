@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -39,6 +40,9 @@ public class User {
 
     @Builder.Default
     private Set<Role> roles = new HashSet<>(Set.of(Role.ROLE_USER));
+
+    @Indexed(expireAfter = "0")
+    private Instant expiresAt;
 
 }
 
