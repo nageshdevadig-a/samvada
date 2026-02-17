@@ -1,11 +1,12 @@
-package io.tharka.samvada.core.validation;
+package io.tharka.samvada.core.validation.validator;
 
+import io.tharka.samvada.core.validation.annotation.ValidIdentity;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator;
 import java.util.regex.Pattern;
 
-class IdentityValidator implements ConstraintValidator<ValidIdentity, String> {
+public class IdentityValidator implements ConstraintValidator<ValidIdentity, String> {
 
     private final Pattern USERNAME_PATTERN = Pattern.compile("^[a-z][a-z0-9_]*$");
 

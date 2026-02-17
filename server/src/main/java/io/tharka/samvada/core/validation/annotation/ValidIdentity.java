@@ -1,5 +1,6 @@
-package io.tharka.samvada.core.validation;
+package io.tharka.samvada.core.validation.annotation;
 
+import io.tharka.samvada.core.validation.validator.IdentityValidator;
 import jakarta.validation.Constraint;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
