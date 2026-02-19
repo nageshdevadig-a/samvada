@@ -23,7 +23,7 @@ public class UserService {
     public boolean disableUser(UserDeleteRequest user)
     {
         User userEntity = userRepository.findByEmail(user.email())
-                .orElseThrow(()-> new UserNotFoundException("User not found"));
+                .orElseThrow(UserNotFoundException::new);
         if (passwordEncoder.matches(user.password(),userEntity.getPassword()))
         {
         userEntity.setActive(false);
@@ -37,19 +37,19 @@ public class UserService {
     public UserResponse updateUserDetails(UserDetailsUpdate user, UserPrincipal userPrincipal)
     {
         User userEntity = userRepository.findByEmail(userPrincipal.getEmail())
-                .orElseThrow(()-> new UserNotFoundException("User not found"));
+                .orElseThrow(UserNotFoundException::new);
 
-        userEntity.setName(user.name());
-        userEntity.setUsername(user.username());
+        userEntity.setFullName(user.fullName());
+        userEntity.setUserName(user.userName());
         User user1 = userRepository.save(userEntity);
-        return new UserResponse(user1.getUsername(), user1.getEmail(), user1.getName());
+        return new UserResponse(user1.getUserName(), user1.getEmail(), user1.getFullName());
     }
 
 
     public boolean updatePassword(UserPasswordUpdate passwordRequest, UserPrincipal userPrincipal)
     {
         User userEntity = userRepository.findByEmail(userPrincipal.getEmail())
-                .orElseThrow(()-> new UserNotFoundException("User not found"));
+                .orElseThrow(UserNotFoundException::new);
         if(passwordEncoder.matches(passwordRequest.currentPassword(),userEntity.getPassword()))
         {
             userEntity.setPassword(passwordEncoder.encode(passwordRequest.newPassword()));

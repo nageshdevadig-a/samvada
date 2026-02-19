@@ -71,7 +71,7 @@ public class AuthService
         //  Dont throw user already exists exception. if user verify email successfully then we allow user to crate user name and password. if username already exists we say username is invalid
         //  after successfully user creation we send jwt cookie with access token and refresh token cookie.
 
-        Optional<User> existingUser = userRepository.findByUsernameOrEmail(user.username(), user.email());
+        Optional<User> existingUser = userRepository.findByUserNameOrEmail(user.userName(), user.email());
 
         if (existingUser.isPresent())
         {
@@ -91,8 +91,8 @@ public class AuthService
         }
         // Case 3: New user request, create and persist the user record.
         User newUser = User.builder()
-                .name(user.name())
-                .username(user.username())
+                .fullName(user.fullName())
+                .userName(user.userName())
                 .email(user.email())
                 .password(passwordEncoder.encode(user.password()))
                 .build();
@@ -110,7 +110,7 @@ public class AuthService
             return authenticate(user);
         }
         catch (AccountExpiredException e){
-            User userEntity = userRepository.findByUsernameOrEmail(user.usernameOrEmail(), user.usernameOrEmail())
+            User userEntity = userRepository.findByUserNameOrEmail(user.usernameOrEmail(), user.usernameOrEmail())
                     .orElseThrow(()-> new BadCredentialsException("Invalid username or password."));
             userEntity.setActive(true);
             userEntity.setExpiresAt(null);

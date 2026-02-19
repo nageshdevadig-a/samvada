@@ -23,10 +23,10 @@ public class User {
     @Id
     private ObjectId id;
 
-    private String name;
+    private String fullName;
 
     @Indexed(unique = true, direction = IndexDirection.ASCENDING)
-    private String username;
+    private String userName;
 
     @Indexed(unique = true, direction = IndexDirection.DESCENDING)
     private String email;

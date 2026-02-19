@@ -6,6 +6,7 @@ import io.tharka.samvada.auth.dto.UserCreateRequest;
 import io.tharka.samvada.auth.dto.UserLoginRequest;
 import io.tharka.samvada.auth.service.AuthService;
 import jakarta.validation.Valid;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,27 +24,25 @@ public class AuthController
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signUp(@Valid @RequestBody UserCreateRequest user)
+    public ResponseEntity<@NonNull Void> signUp(@Valid @RequestBody UserCreateRequest user)
     {
         TokenResponse tokens = authService.verify(UserLoginRequest.from(authService.register(user).getEmail(),user.password()));
         return ResponseEntity.status(HttpStatus.CREATED)
-                .header(HttpHeaders.SET_COOKIE, tokens.jwtToken())
-                .header(HttpHeaders.SET_COOKIE, tokens.refreshToken())
+                .header(HttpHeaders.SET_COOKIE, tokens.jwtToken(), tokens.refreshToken())
                 .build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody UserLoginRequest user)
+    public ResponseEntity<@NonNull Void> login(@Valid @RequestBody UserLoginRequest user)
     {
         TokenResponse tokens = authService.verify(user);
         return ResponseEntity.status(HttpStatus.OK)
-                .header(HttpHeaders.SET_COOKIE, tokens.jwtToken())
-                .header(HttpHeaders.SET_COOKIE, tokens.refreshToken())
+                .header(HttpHeaders.SET_COOKIE, tokens.jwtToken(), tokens.refreshToken())
                 .build();
     }
 
     @PostMapping("/refresh_token")
-    public ResponseEntity<?> refreshToken(
+    public ResponseEntity<@NonNull Void> refreshToken(
             @CookieValue(name = "rf_token") String refreshToken,
             @CookieValue(name = "access_token") String jwtToken
     )

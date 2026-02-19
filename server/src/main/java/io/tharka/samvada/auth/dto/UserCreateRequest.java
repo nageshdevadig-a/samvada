@@ -10,7 +10,7 @@ import jakarta.validation.constraints.Size;
 /**
  * This record is used for creating a new user.
  * @param name Full name of the user
- * @param username Unique username for the user (alphanumeric and underscores only)
+ * @param userName Unique username for the user (alphanumeric and underscores only)
  * @param email Valid email address of the user
  * @param password Password for the user account (8-100 characters)
  */
@@ -19,7 +19,7 @@ public record UserCreateRequest(
         @Pattern(
                 regexp = "^[a-zA-Z][a-zA-Z\\s]*$",
                 message = "Name must start with a letter and contain only alphabets and spaces")
-        String name,
+        String fullName,
 
 
         @NotBlank
@@ -27,7 +27,7 @@ public record UserCreateRequest(
         @Pattern(
                 regexp = "^[a-z][a-z0-9_]*$",
                 message = "Username can only contain alphanumeric characters and underscores")
-        String username,
+        String userName,
 
         @NotBlank @Email
         String email,

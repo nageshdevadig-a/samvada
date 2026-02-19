@@ -8,7 +8,7 @@ public record UserDetailsUpdate(
                 regexp = "^[a-zA-Z][a-zA-Z\\s]*$",
                 message = "Name must start with a letter and contain only alphabets and spaces"
         )
-        String name,
+        String fullName,
 
         @NotBlank
         @Size(min = 3,max = 20)
@@ -16,6 +16,6 @@ public record UserDetailsUpdate(
                 regexp = "^[a-z][a-z0-9_]*$",
                 message = "Username can only contain alphanumeric characters and underscores"
         )
-        String username
+        String userName
 ) {
 }
