@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public class IdentityValidator implements ConstraintValidator<ValidIdentity, String> {
 
-    private final Pattern USERNAME_PATTERN = Pattern.compile("^[a-z][a-z0-9_]*$");
+    private final Pattern userNamePattern = Pattern.compile("^[a-z][a-z0-9_]*$");
 
     private final EmailValidator emailValidator = new EmailValidator();
 
@@ -17,7 +17,7 @@ public class IdentityValidator implements ConstraintValidator<ValidIdentity, Str
         if (value == null || value.isBlank())
             return false;
 
-        if(USERNAME_PATTERN.matcher(value).matches())
+        if(userNamePattern.matcher(value).matches())
             return true;
         return emailValidator.isValid(value, context);
     }
