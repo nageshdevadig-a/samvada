@@ -4,5 +4,4 @@ public record UserResponse(
         String userName,
         String email,
         String fullName
-) {
-}
+) {}
