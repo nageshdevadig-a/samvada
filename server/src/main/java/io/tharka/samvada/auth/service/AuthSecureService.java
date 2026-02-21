@@ -16,6 +16,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -30,6 +31,8 @@ public class AuthSecureService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JWTService jwtService;
 
+
+    @Transactional
     public TokenResponse disableUser(UserDeleteRequest user)
     {
         PasswordProjection userPassword = userRepository.findPasswordByEmail(user.email())
