@@ -1,0 +1,11 @@
+[versions]
+jjwtVer = "0.13.0"
+codecVer = "1.17.0"
+uuidGenVer = "5.1.0"
+
+[libraries]
+jjwtApi = {group = "io.jsonwebtoken", name= "jjwt-api", version.ref= "jjwtVer"}
+jjwtImpl = {group = "io.jsonwebtoken",name="jjwt-impl", version.ref= "jjwtVer"}
+jjwtJackson = {group= "io.jsonwebtoken", name = "jjwt-jackson", version.ref= "jjwtVer"}
+commonsCodec = {group = "commons-codec", name = "commons-codec", version.ref = "codecVer"}
+uuidGenerator = {group = "com.fasterxml.uuid", name = "java-uuid-generator", version.ref = "uuidGenVer"}
