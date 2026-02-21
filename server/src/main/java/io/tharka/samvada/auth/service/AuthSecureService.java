@@ -18,6 +18,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +66,7 @@ public class AuthSecureService {
 
     public TokenResponse logoutUser(String jwtToken){
         String jti = jwtService.extractClaim(jwtToken, Claims::getId);
-        refreshTokenRepository.deleteByJti(jti);
+        refreshTokenRepository.deleteByJti(UUID.fromString(jti));
         return invalidateSession();
 
     }

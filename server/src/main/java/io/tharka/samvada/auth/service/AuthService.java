@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -128,17 +129,17 @@ public class AuthService
         if (!authentication.isAuthenticated()) {throw new UserNotFoundException("Invalid username or password.");}
         UserPrincipal userPrincipal = (UserPrincipal) Objects.requireNonNull(authentication.getPrincipal());
         refreshTokenRepository.deleteByUserEmail(userPrincipal.getEmail());
-        String jti = SecureIdGenerator.generateOrderId().toString().replace("-", "");
+        UUID jti = SecureIdGenerator.generateOrderId();
         return new TokenResponse(rfCookieBuilder(
                 userPrincipal.getEmail(), deviceId ,jti),
-                jwtCookieBuilder(jwtService.generateToken(userPrincipal.getEmail(),jti))
+                jwtCookieBuilder(jwtService.generateToken(userPrincipal.getEmail(),jti.toString()))
         );
     }
 
 
     public TokenResponse rfTokenVerify(String refreshToken, String deviceId)
     {
-        RefreshToken rfToken =  refreshTokenRepository.findByToken(refreshToken)
+        RefreshToken rfToken =  refreshTokenRepository.findByToken(UUID.fromString(refreshToken))
                 .orElseThrow(()-> new InvalidRefreshTokenException("Invalid token. Please Login again"));
         if (!deviceId.equals(rfToken.getDeviceId()) || rfToken.getExpiresAt().isBefore(Instant.now()))
         {
@@ -146,10 +147,10 @@ public class AuthService
             throw new InvalidRefreshTokenException("Invalid token. Please Login again");
         }
         refreshTokenRepository.delete(rfToken);
-        String jti = SecureIdGenerator.generateOrderId().toString().replace("-", "");
+        UUID jti = SecureIdGenerator.generateOrderId();
         return new TokenResponse(rfCookieBuilder(
                 rfToken.getUserEmail(), deviceId,jti),
-                jwtCookieBuilder(jwtService.generateToken(rfToken.getUserEmail(), jti))
+                jwtCookieBuilder(jwtService.generateToken(rfToken.getUserEmail(), jti.toString()))
         );
     }
 
@@ -167,10 +168,11 @@ public class AuthService
     }
 
 
-    private String rfCookieBuilder(String userEmail, String deviceId ,String jti)
+    private String rfCookieBuilder(String userEmail, String deviceId ,UUID jti)
     {
+        UUID token = SecureIdGenerator.generateOrderId();
         RefreshToken refreshTokenEntity = RefreshToken.builder()
-                .token(SecureIdGenerator.generateOrderId().toString().replace("-", ""))
+                .token(token)
                 .jti(jti)
                 .deviceId(deviceId)
                 .userEmail(userEmail)
@@ -178,7 +180,7 @@ public class AuthService
         refreshTokenRepository.save(refreshTokenEntity);
 
         // TODO change cookie name to __HOST-access_token to prevent the Cross Subdomain XSS attack
-        ResponseCookie cookie =  ResponseCookie.from("rf_token",refreshTokenEntity.getToken())
+        ResponseCookie cookie =  ResponseCookie.from("rf_token",token.toString())
                 .httpOnly(true)
                 .secure(isSecure)
                 .path("/api/v1/auth/refresh_token")

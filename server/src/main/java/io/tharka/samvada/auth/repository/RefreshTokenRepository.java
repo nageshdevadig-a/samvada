@@ -7,13 +7,14 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface RefreshTokenRepository extends MongoRepository<@NonNull RefreshToken, @NonNull String> {
+public interface RefreshTokenRepository extends MongoRepository<@NonNull RefreshToken, @NonNull UUID> {
 
-    Optional<RefreshToken> findByToken(String refreshToken);
+    Optional<RefreshToken> findByToken(UUID refreshToken);
 
     void deleteByUserEmail(String userEmail);
 
-    void deleteByJti(String jti);
+    void deleteByJti(UUID jti);
 }

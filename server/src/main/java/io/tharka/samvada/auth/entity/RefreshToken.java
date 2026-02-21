@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -18,10 +19,10 @@ import java.time.temporal.ChronoUnit;
 public class RefreshToken {
 
     @Id
-    private String token;
+    private UUID token;
 
     @Indexed(unique = true, sparse = true)
-    private String jti;
+    private UUID jti;
 
     private String deviceId;
 

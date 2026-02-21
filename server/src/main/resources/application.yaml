@@ -13,7 +13,8 @@ spring:
   #  MongoDB Configuration
   mongodb:
     uri: mongodb+srv://${MONGO_USER}:${MONGO_PWD}@${MONGO_HOST}/samvada_db?retryWrites=true&w=majority&appName=tharka-cluster
-
+    representation:
+      uuid: standard
 
 jwt:
   secret: ${JWT_SECRET:this_is_just_for_local_dev_testing_12345}
