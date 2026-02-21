@@ -10,6 +10,7 @@ import io.tharka.samvada.core.exception.base.InvalidRefreshTokenException;
 import io.tharka.samvada.core.exception.base.UserAlreadyExistsException;
 import io.tharka.samvada.core.exception.base.UserNotFoundException;
 import io.tharka.samvada.core.security.service.JWTService;
+import io.tharka.samvada.core.util.SecureIdGenerator;
 import io.tharka.samvada.user.model.UserPrincipal;
 import io.tharka.samvada.user.entity.User;
 import io.tharka.samvada.user.repository.UserRepository;
@@ -28,7 +29,6 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -104,54 +104,52 @@ public class AuthService
 
 
 
-    public TokenResponse verify(UserLoginRequest user)
+    public TokenResponse verify(UserLoginRequest user, String deviceId)
     {
         try {
-            return authenticate(user);
+            return authenticate(user, deviceId);
         }
         catch (AccountExpiredException e){
-            User userEntity = userRepository.findByUserNameOrEmail(user.usernameOrEmail(), user.usernameOrEmail())
-                    .orElseThrow(()-> new BadCredentialsException("Invalid username or password."));
-            userEntity.setActive(true);
-            userEntity.setExpiresAt(null);
-            userRepository.save(userEntity);
-            return authenticate(user);
+            userRepository.activateUser(user.usernameOrEmail());
+            return authenticate(user, deviceId);
         }
-        catch (Exception e) {
+        catch (Exception e)
+        {
             throw new BadCredentialsException("Invalid username or password.");
         }
     }
 
-    private TokenResponse authenticate(UserLoginRequest user)
+    private TokenResponse authenticate(UserLoginRequest user, String deviceId)
     {
         Authentication authentication =
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                         user.usernameOrEmail(),
                         user.password()));
-        if (!authentication.isAuthenticated()) {
-            throw new UserNotFoundException("Invalid username or password.");
-        }
+        if (!authentication.isAuthenticated()) {throw new UserNotFoundException("Invalid username or password.");}
         UserPrincipal userPrincipal = (UserPrincipal) Objects.requireNonNull(authentication.getPrincipal());
+        refreshTokenRepository.deleteByUserEmail(userPrincipal.getEmail());
+        String jti = SecureIdGenerator.generateOrderId().toString().replace("-", "");
         return new TokenResponse(rfCookieBuilder(
-                userPrincipal.getEmail()),
-                jwtCookieBuilder(jwtService.generateToken(userPrincipal.getEmail()))
+                userPrincipal.getEmail(), deviceId ,jti),
+                jwtCookieBuilder(jwtService.generateToken(userPrincipal.getEmail(),jti))
         );
     }
 
 
-    public TokenResponse rfTokenVerify(String refreshToken, String jwtToken)
+    public TokenResponse rfTokenVerify(String refreshToken, String deviceId)
     {
         RefreshToken rfToken =  refreshTokenRepository.findByToken(refreshToken)
                 .orElseThrow(()-> new InvalidRefreshTokenException("Invalid token. Please Login again"));
-        if(rfToken.getExpiresAt().isBefore(Instant.now())){
+        if (!deviceId.equals(rfToken.getDeviceId()) || rfToken.getExpiresAt().isBefore(Instant.now()))
+        {
             refreshTokenRepository.delete(rfToken);
-            throw new InvalidRefreshTokenException("Session Expired. Please Login again");
+            throw new InvalidRefreshTokenException("Invalid token. Please Login again");
         }
         refreshTokenRepository.delete(rfToken);
-        jwtService.isSignatureValid(jwtToken);
+        String jti = SecureIdGenerator.generateOrderId().toString().replace("-", "");
         return new TokenResponse(rfCookieBuilder(
-                rfToken.getUserEmail()),
-                jwtCookieBuilder(jwtService.generateToken(rfToken.getUserEmail()))
+                rfToken.getUserEmail(), deviceId,jti),
+                jwtCookieBuilder(jwtService.generateToken(rfToken.getUserEmail(), jti))
         );
     }
 
@@ -169,10 +167,12 @@ public class AuthService
     }
 
 
-    private String rfCookieBuilder(String userEmail)
+    private String rfCookieBuilder(String userEmail, String deviceId ,String jti)
     {
         RefreshToken refreshTokenEntity = RefreshToken.builder()
-                .token(UUID.randomUUID().toString())
+                .token(SecureIdGenerator.generateOrderId().toString().replace("-", ""))
+                .jti(jti)
+                .deviceId(deviceId)
                 .userEmail(userEmail)
                 .build();
         refreshTokenRepository.save(refreshTokenEntity);
