@@ -14,7 +14,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,17 +37,6 @@ public class UserController {
 
 
 
-    @PostMapping("/deactivate")
-    public  ResponseEntity<@NonNull Void> deactivateUser(@Valid @RequestBody UserDeleteRequest user)
-    {
-        if(userService.disableUser(user))
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        else
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-    }
-
-
-
     @PutMapping
     public ResponseEntity<@NonNull UserResponse> updateUser(@Valid @RequestBody UserDetailsUpdate user,
                                         @AuthenticationPrincipal UserPrincipal userPrincipal)
@@ -56,20 +44,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(userService.updateUserDetails(user, userPrincipal));
     }
-
-
-
-    @PutMapping("/password")
-    public ResponseEntity<@NonNull Map<String, String>> updatePassword(@Valid @RequestBody UserPasswordUpdate passwordRequest,
-                                            @AuthenticationPrincipal UserPrincipal userPrincipal)
-    {
-        if(userService.updatePassword(passwordRequest, userPrincipal))
-            return ResponseEntity.status(HttpStatus.OK).body(Map.of("message","Password updated successfully"));
-        else
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message","Invalid Current Password"));
-    }
-
-
 
 
 }

@@ -9,7 +9,7 @@ import jakarta.validation.constraints.Size;
 
 /**
  * This record is used for creating a new user.
- * @param name Full name of the user
+ * @param fullName Full name of the user
  * @param userName Unique username for the user (alphanumeric and underscores only)
  * @param email Valid email address of the user
  * @param password Password for the user account (8-100 characters)

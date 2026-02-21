@@ -10,4 +10,5 @@ public interface CustomUserRepository {
     Optional<UserResponse> updateAndFetchUser(String email, String userName, String fullName);
 
     boolean deactivateUser( String email);
+    boolean activateUser( String email);
 }

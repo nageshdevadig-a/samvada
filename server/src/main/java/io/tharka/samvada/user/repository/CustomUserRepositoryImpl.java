@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
@@ -73,6 +74,24 @@ public class CustomUserRepositoryImpl implements CustomUserRepository
         UpdateResult updateResult = mongoTemplate.updateFirst(query, update, User.class);
         if (updateResult.getMatchedCount() == 0) throw new UserNotFoundException();
         return updateResult.wasAcknowledged();
+    }
+
+    @Override
+    public boolean activateUser(String email)
+    {
+        Query query = new Query();
+        query.addCriteria(
+                new Criteria().orOperator(
+                        Criteria.where("email").is(email),
+                        Criteria.where("userName").is(email)
+                ));
+        Update update = new Update()
+                .set("isActive", true)
+                .unset("expiresAt");
+        UpdateResult updateResult = mongoTemplate.updateFirst(query, update, User.class);
+        if (updateResult.getMatchedCount() == 0) throw new BadCredentialsException("Invalid username or password.");
+        return updateResult.wasAcknowledged();
+
     }
 
 }

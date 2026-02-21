@@ -19,10 +19,11 @@ public class JWTService {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    public String generateToken(String userEmail) {
+    public String generateToken(String userEmail, String jti) {
 
         return Jwts.builder()
                 .claims()
+                .id(jti)
                 .subject(userEmail)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000))
@@ -42,7 +43,7 @@ public class JWTService {
         return extractClaim(token, Claims::getSubject);
     }
 
-    private <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
+    public  <T> T extractClaim(String token, Function<Claims, T> claimResolver) {
         final Claims claims = extractAllClaims(token);
         return claimResolver.apply(claims);
     }
