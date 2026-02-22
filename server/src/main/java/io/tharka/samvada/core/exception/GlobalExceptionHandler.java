@@ -1,5 +1,6 @@
 package io.tharka.samvada.core.exception;
 
+import io.tharka.samvada.core.exception.base.RoomNotFoundException;
 import lombok.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -77,7 +78,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ProblemDetail handleUserNotFoundException()
     {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND,"Username or password doesn't match");
-        problemDetail.setTitle("Conflict");
+        problemDetail.setTitle("Not Found");
+        return  problemDetail;
+    }
+
+    @ExceptionHandler({RoomNotFoundException.class})
+    public ProblemDetail handleRoomNotFoundException(RoomNotFoundException ex)
+    {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND,ex.getMessage());
+        problemDetail.setTitle("Not Found");
         return  problemDetail;
     }
 
