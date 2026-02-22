@@ -2,9 +2,11 @@ package io.tharka.samvada.user.service;
 
 import io.tharka.samvada.core.exception.base.UserNotFoundException;
 import io.tharka.samvada.user.dto.*;
+import io.tharka.samvada.user.entity.User;
 import io.tharka.samvada.user.model.UserPrincipal;
 import io.tharka.samvada.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
 
@@ -26,6 +28,10 @@ public class UserService {
     }
 
 
-
+    public UserResponse getUserDetails(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow( ()-> new BadCredentialsException("Invalid username or password"));
+        return new UserResponse(user.getUserName(), user.getEmail(), user.getFullName());
+    }
 }
 
