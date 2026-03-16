@@ -47,7 +47,7 @@ public class SecurityConfig {
                 )
                 // Session & Authorization
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/api/v1/auth/signup","/api/v1/auth/login","/api/v1/auth/refresh_token").permitAll()
+                        .requestMatchers("/api/v1/auth/signup","/api/v1/auth/login","/api/v1/auth/refresh_token","/api/v1/system/warmup").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -60,7 +60,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000"));
+        config.setAllowedOrigins(List.of("http://localhost:5173"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Content-Type", "X-Samvada-CSRF", "X-Device-ID"));
         config.setAllowCredentials(true);
