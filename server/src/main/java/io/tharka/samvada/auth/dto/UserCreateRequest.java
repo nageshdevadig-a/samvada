@@ -18,7 +18,7 @@ public record UserCreateRequest(
         @NotBlank
         @Pattern(
                 regexp = "^[a-zA-Z][a-zA-Z\\s]*$",
-                message = "Name must start with a letter and contain only alphabets and spaces")
+                message = "Name must contain only alphabets and spaces")
         String fullName,
 
 
