@@ -28,6 +28,9 @@ public class AuthSecureService {
     @Value("${app.security.cookie-secure:true}")
     private boolean isSecure;
 
+    @Value("${app.security.cookie-same-site:None}")
+    private String isSameSite;
+
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -78,14 +81,14 @@ public class AuthSecureService {
                 .secure(isSecure)
                 .path("/api/v1/auth/refresh_token")
                 .maxAge(0)
-                .sameSite("None")
+                .sameSite(isSameSite)
                 .build();
         ResponseCookie cookie2 =  ResponseCookie.from("access_token","")
                 .httpOnly(true)
                 .secure(isSecure)
                 .path("/")
                 .maxAge(0)
-                .sameSite("None")
+                .sameSite(isSameSite)
                 .build();
 
         return new TokenResponse(cookie1.toString(), cookie2.toString());

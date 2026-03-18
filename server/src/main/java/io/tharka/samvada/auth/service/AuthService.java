@@ -46,6 +46,9 @@ public class AuthService
     @Value("${app.security.cookie-secure:true}")
     private boolean isSecure;
 
+    @Value("${app.security.cookie-same-site:None}")
+    private String isSameSite;
+
     /**
      * It allows to create new users after it checks for the below conditions.
      * <p>
@@ -162,7 +165,7 @@ public class AuthService
                 .secure(isSecure)
                 .path("/")
                 .maxAge(3600)
-                .sameSite("None")
+                .sameSite(isSameSite)
                 .build();
         return cookie.toString();
     }
@@ -185,7 +188,7 @@ public class AuthService
                 .secure(isSecure)
                 .path("/api/v1/auth/refresh_token")
                 .maxAge(TimeUnit.DAYS.toSeconds(7))
-                .sameSite("None")
+                .sameSite(isSameSite)
                 .build();
         return cookie.toString();
     }

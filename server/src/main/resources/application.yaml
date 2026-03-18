@@ -22,6 +22,7 @@ jwt:
 app:
   security:
     cookie-secure: false
+    cookie-same-site: Lax
 
 #logging:
 #  level:
