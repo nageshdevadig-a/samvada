@@ -3,6 +3,7 @@ package io.tharka.samvada.core.config;
 import io.tharka.samvada.auth.service.UserDetailsServiceImpl;
 import io.tharka.samvada.core.security.filter.JwtFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.util.List;
 
@@ -26,6 +28,9 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    @Qualifier("handlerExceptionResolver")
+    private final HandlerExceptionResolver resolver;
 
     private final JwtFilter jwtFilter;
 
@@ -51,6 +56,12 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) ->
+                            resolver.resolveException(request, response, null, authException))
+                        .accessDeniedHandler((request, response, accessDeniedException) ->
+                            resolver.resolveException(request, response, null, accessDeniedException))
+                )
                 // Jwt Filter to verify JWT token
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

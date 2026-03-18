@@ -3,6 +3,8 @@ package io.tharka.samvada.core.exception;
 import io.tharka.samvada.core.exception.base.RoomNotFoundException;
 import lombok.NonNull;
 import org.jspecify.annotations.Nullable;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -39,6 +41,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             MalformedJwtException.class,
             BadCredentialsException.class,
             InvalidRefreshTokenException.class,
+            AuthenticationException.class,
     })
     public ProblemDetail buildAuthErrors(Exception exception) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
@@ -87,6 +90,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND,ex.getMessage());
         problemDetail.setTitle("Not Found");
+        return  problemDetail;
+    }
+
+    @ExceptionHandler({AccessDeniedException.class})
+    public ProblemDetail handleAccessDeniedException(AccessDeniedException ex)
+    {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN,"Access Denied. You don't have permission to access this resource.");
+        problemDetail.setTitle("Access Denied");
         return  problemDetail;
     }
 
