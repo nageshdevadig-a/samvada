@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: samvada
+
+#  Data Behaviour
+  data:
+    mongodb:
+      auto-index-creation: true
+
+#    redis:
+#      url: redis://${REDIS_USR:}:${REDIS_PW:password123}@localhost:6379/0
+
+  #  MongoDB Configuration
+  mongodb:
+    uri: mongodb+srv://${MONGO_USER}:${MONGO_PWD}@${MONGO_HOST}/samvada_db?maxIdleTimeMS=60000&retryWrites=true&w=majority&appName=tharka-cluster
+    representation:
+      uuid: standard
+
+jwt:
+  secret: ${JWT_SECRET}
+
+app:
+  security:
+    cookie-secure: true
+    cookie-same-site: None
+
+  server:
+    allowed-origin: ${FRONTEND_URL:http://localhost:5173}
+
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        security:
+#          authentication:
+#            dao:
+#              DaoAuthenticationProvider: DEBUG
+#          web:
+#            authentication:
+#              www:
+#                BasicAuthenticationFilter: DEBUG
