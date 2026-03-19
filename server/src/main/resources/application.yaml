@@ -21,8 +21,8 @@ jwt:
 
 app:
   security:
-    cookie-secure: false
-    cookie-same-site: Lax
+    cookie-secure: ${COOKIE_SECURE:false}
+    cookie-same-site: ${COOKIE_SAME_SITE:Lax}
 
   server:
     allowed-origin: ${FRONTEND_URL:http://localhost:5173}
