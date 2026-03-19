@@ -16,5 +16,8 @@ export const signup = (formData) => {
             "X-Device-Id": getDeviceId()
         }
     });
+}
 
+export const logout = () => {
+    return api.post("/v1/auth/logout", null);
 }

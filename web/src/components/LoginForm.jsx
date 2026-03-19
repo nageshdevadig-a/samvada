@@ -6,7 +6,7 @@ import { loginSchema } from "../schemas/loginSchema";
 import { login } from "../services/authService";
 import { CircleAlert } from "lucide-react";
 
-const LoginForm = () => {
+const LoginForm = ({ onLoginSuccess }) => {
 
     const [apiError, setApiError] = useState("");
 
@@ -20,7 +20,9 @@ const LoginForm = () => {
 
             const response = await login(data);
             console.log("Login successful", response);
-
+            if (response.status === 200) {
+                onLoginSuccess();
+            }
         }
         catch (error) {
             if (error.response) {

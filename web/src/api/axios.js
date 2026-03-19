@@ -5,7 +5,18 @@ const api = axios.create({
     timeout: 5000,
     withCredentials: true,
 
-})
+});
+
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+    failedQueue.forEach(prom => {
+        if (error) prom.reject(error);
+        else prom.resolve(token);
+    });
+    failedQueue = [];
+};
 
 
 api.interceptors.request.use((config) => {
@@ -37,6 +48,48 @@ api.interceptors.request.use((config) => {
 }, (error) => {
     return Promise.reject(error);
 })
+
+
+api.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const originalRequest = error.config;
+        const deviceId = localStorage.getItem("samvada_deviceId")
+
+        if (error.response?.status === 401 && !originalRequest._retry && deviceId) {
+            console.log("Message from Response interceptor");
+
+            if (isRefreshing) {
+                return new Promise((resolve, reject) => {
+                    failedQueue.push({ resolve, reject });
+                }).then(() => api(originalRequest))
+                    .catch(err => Promise.reject(err));
+            }
+
+            originalRequest._retry = true;
+            isRefreshing = true;
+
+            try {
+                await api.post("/v1/auth/refresh_token", null, {
+                    headers: {
+                        "X-Device-Id": deviceId
+                    }
+                });
+                isRefreshing = false;
+                processQueue(null);
+                return api(originalRequest);
+            }
+            catch (refreshError) {
+                isRefreshing = false;
+                processQueue(refreshError, null);
+                localStorage.removeItem("samvada_user");
+                window.location.href = "/";
+                return Promise.reject(refreshError);
+            }
+        }
+        return Promise.reject(error)
+    }
+);
 
 
 export default api;

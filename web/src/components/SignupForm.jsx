@@ -6,7 +6,7 @@ import { signup } from "../services/authService";
 import { Link } from "react-router";
 import { CircleAlert } from "lucide-react";
 
-const SignupForm = () => {
+const SignupForm = ({ onAccountCreated }) => {
 
     const [apiError, setApiError] = useState("");
 
@@ -19,8 +19,9 @@ const SignupForm = () => {
         try {
 
             const response = await signup(data);
-            console.log("Login successful", response);
-
+            console.log("Account Created", response);
+            if (response.status === 201){onAccountCreated();}
+            
         }
         catch (error) {
             // 1. Check if the server actually sent a response
