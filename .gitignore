@@ -1,0 +1,20 @@
+# --- System / IDE Files ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# --- Backend (Spring Boot) ---
+backend/target/
+backend/*.class
+backend/.mvn/
+
+# --- Frontend (React/Vite) ---
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+
+# --- Global Secrets ---
+.env
+*.log
