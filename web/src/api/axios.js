@@ -83,7 +83,7 @@ api.interceptors.response.use(
                 isRefreshing = false;
                 processQueue(refreshError, null);
                 localStorage.removeItem("samvada_user");
-                // window.location.href = "/";
+                window.location.href = "/";
                 return Promise.reject(refreshError);
             }
         }
