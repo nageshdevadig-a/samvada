@@ -96,7 +96,7 @@ const LoginForm = ({ onLoginSuccess }) => {
                     </Link>
                 </div>
                 <div className="flex justify-center pt-8 opacity-60">
-                    <span className="text-xs font-bold tracking-widest text-gray-400">THARKA</span>
+                    <span className="text-xs font-bold tracking-widest text-gray-400">UPARYA</span>
                 </div>
             </div>
         </div>
