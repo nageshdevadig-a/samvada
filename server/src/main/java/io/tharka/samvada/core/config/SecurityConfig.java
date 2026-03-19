@@ -4,6 +4,7 @@ import io.tharka.samvada.auth.service.UserDetailsServiceImpl;
 import io.tharka.samvada.core.security.filter.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,6 +32,9 @@ public class SecurityConfig {
 
     @Qualifier("handlerExceptionResolver")
     private final HandlerExceptionResolver resolver;
+
+    @Value("${app.server.allowed-origin}")
+    private String allowedOrigin;
 
     private final JwtFilter jwtFilter;
 
@@ -71,7 +75,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedOrigins(List.of(allowedOrigin));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Content-Type", "X-Samvada-CSRF", "X-Device-ID"));
         config.setAllowCredentials(true);

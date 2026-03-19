@@ -24,6 +24,9 @@ app:
     cookie-secure: false
     cookie-same-site: Lax
 
+  server:
+    allowed-origin: ${FRONTEND_URL:http://localhost:5173}
+
 #logging:
 #  level:
 #    org:
