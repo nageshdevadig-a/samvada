@@ -1,6 +1,6 @@
 import { Link, useParams, useNavigate } from "react-router";
 import { useEffect, useState } from "react";
-import { useSocket } from "../api/socketContext";
+import { useSocket } from "../api/SocketContext";
 import SideBar from "../components/dashboard/SideBar";
 import SearchBar from "../components/dashboard/chatSideBar/SearchBar";
 import ConversationCard from "../components/dashboard/chatSideBar/ConversationCard";
