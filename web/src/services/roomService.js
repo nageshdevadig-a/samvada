@@ -7,3 +7,7 @@ export const getRooms = () => {
 export const getMessages = (roomId) => {
    return api.get(`/v1/messages/${roomId}`)
 }
+
+export const sendMessage = (message, roomId) => {
+   return api.post(`/v1/messages/${roomId}`, {content:message})
+}

@@ -22,6 +22,23 @@ const ChatWindow = ({ activeChat, onSendMessage }) => {
   }, [activeChat.roomId]);
 
 
+  useEffect(() => {
+    // Only proceed if there is a message and it belongs to THIS room
+    if (activeChat?.lastMessage && activeChat.lastMessage.roomId === activeChat.roomId) {
+        
+        setMessages((prev) => {
+            // Use a unique ID check to prevent duplicates (Standard Practice)
+            const isDuplicate = prev.some(m => m.messageId === activeChat.lastMessage.messageId);
+            if (isDuplicate) return prev;
+            
+            console.log("New message received in Window:", activeChat.lastMessage);
+            
+            // Since you use flex-col-reverse, new messages go at the START [0]
+            return [activeChat.lastMessage, ...prev];
+        });
+    }
+}, [activeChat.lastMessage, activeChat.roomId]);
+
 // Auto-scroll to bottom when messages load
   useEffect(() => {
     if (scrollRef.current) {
