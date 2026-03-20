@@ -16,9 +16,10 @@ const DashBoard = () => {
     const navigate = useNavigate();
     const { roomId } = useParams();
 
-    const { lastMessage } = useSocket();
+    const { lastMessage, setIsAuthenticated} = useSocket();
 
     useEffect(() => {
+        setIsAuthenticated(!!localStorage.getItem("samvada_user"));
         getRooms().then((response) => {
             console.log("Data", response);
             setChats(response.data);

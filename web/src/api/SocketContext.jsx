@@ -1,13 +1,21 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Client } from '@stomp/stompjs';
+import { set } from 'zod';
 
 const SocketContext = createContext(null);
 
 export const SocketProvider = ({ children }) => {
     const [stompClient, setStompClient] = useState(null);
     const [lastMessage, setLastMessage] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem("samvada_user"));
+
 
     useEffect(() => {
+
+        if (!isAuthenticated) {
+            console.log("User not authenticated, WebSocket will not activate.");
+            return;
+        }
         // Construct the WebSocket URL
         // If your API is at http://localhost:8080, this becomes ws://localhost:8080/ws
         const wsUrl = import.meta.env.VITE_WS_URL || "ws://localhost:8080/ws";
@@ -56,10 +64,10 @@ export const SocketProvider = ({ children }) => {
                 client.deactivate();
             }
         };
-    }, []);
+    }, [isAuthenticated]); // Re-run if user changes (e.g., login/logout)
 
     return (
-        <SocketContext.Provider value={{ stompClient, lastMessage }}>
+        <SocketContext.Provider value={{ stompClient, lastMessage, setIsAuthenticated }}>
             {children}
         </SocketContext.Provider>
     );
