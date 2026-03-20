@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
-public interface RoomRepository extends MongoRepository<@NonNull Room, @NonNull ObjectId> {
+public interface RoomRepository extends CustomRoomRepository, MongoRepository<@NonNull Room, @NonNull ObjectId> {
 
     Optional<Room> findByRoomHashCode(String roomHashCode);
 
