@@ -54,9 +54,11 @@ api.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config;
-        const deviceId = localStorage.getItem("samvada_deviceId")
+        const deviceId = localStorage.getItem("samvada_deviceId");
 
-        if (error.response?.status === 401 && !originalRequest._retry && deviceId) {
+        const isAuthRequest = originalRequest.url.includes("/v1/auth/login");
+
+        if (error.response?.status === 401 && !originalRequest._retry && !isAuthRequest && deviceId) {
             console.log("Message from Response interceptor");
 
             if (isRefreshing) {
