@@ -7,8 +7,9 @@ const SocketContext = createContext(null);
 export const SocketProvider = ({ children }) => {
     const [stompClient, setStompClient] = useState(null);
     const [lastMessage, setLastMessage] = useState(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem("samvada_user"));
-
+    const [isAuthenticated, setIsAuthenticated] = useState(()=>{
+        return !!localStorage.getItem("samvada_user");
+    });
 
     useEffect(() => {
 
