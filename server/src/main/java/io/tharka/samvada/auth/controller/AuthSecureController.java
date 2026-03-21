@@ -46,7 +46,7 @@ public class AuthSecureController {
     public ResponseEntity<@NonNull Void> logout(@CookieValue(name = "access_token") String jwtToken) {
         TokenResponse tokens = authSecureService.logoutUser(jwtToken);
         return ResponseEntity.status(HttpStatus.OK)
-                .header(HttpHeaders.SET_COOKIE, tokens.jwtToken(), tokens.refreshToken(),tokens.isAuthenticated())
+                .header(HttpHeaders.SET_COOKIE, tokens.jwtToken(), tokens.refreshToken())
                 .build();
 
     }

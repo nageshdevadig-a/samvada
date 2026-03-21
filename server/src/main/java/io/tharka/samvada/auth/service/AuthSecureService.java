@@ -90,15 +90,8 @@ public class AuthSecureService {
                 .maxAge(0)
                 .sameSite(isSameSite)
                 .build();
-        ResponseCookie cookie3 =  ResponseCookie.from("isAuthenticated","")
-                .httpOnly(false)
-                .secure(isSecure)
-                .path("/")
-                .maxAge(0)
-                .sameSite(isSameSite)
-                .build();
 
-        return new TokenResponse(cookie1.toString(), cookie2.toString(), cookie3.toString());
+        return new TokenResponse(cookie1.toString(), cookie2.toString());
     }
 
 }

@@ -13,7 +13,5 @@ public record TokenResponse(
         @NotBlank
         String refreshToken,
         @NotBlank
-        String jwtToken,
-        @NotBlank
-        String isAuthenticated
+        String jwtToken
 ) {}
