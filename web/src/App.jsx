@@ -18,7 +18,10 @@ function App() {
 
   const navigate = useNavigate();
 
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem('samvada_user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
   const [isInitializing, setIsInitializing] = useState(true);
 
 

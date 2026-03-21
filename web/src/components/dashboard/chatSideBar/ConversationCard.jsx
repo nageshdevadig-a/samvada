@@ -1,7 +1,11 @@
-const ConversationCard = ({ chat, isActive}) => {
+import React, { useState } from 'react';
 
-  let time = "12:00 PM";
-  let message = "This is a sample message";
+
+const ConversationCard = ({ chat, isActive, lastMessage}) => {
+  
+  const[latestMessage, setLatestMessage] = useState(lastMessage);
+
+
   return (
     <div className={`flex gap-4 p-4 mx-4 rounded-2xl cursor-pointer transition-all ${
       isActive ? 'bg-[#f7f7ff] shadow-sm' : 'hover:bg-gray-50'
@@ -17,10 +21,10 @@ const ConversationCard = ({ chat, isActive}) => {
       <div className="flex-1 min-w-0">
         <div className="flex justify-between items-start mb-1">
           <h3 className="font-semibold text-gray-800 text-sm truncate">{chat.roomName}</h3>
-          <span className="text-[10px] text-gray-400 font-medium">{time}</span>
+          <span className="text-[10px] text-gray-400 font-medium">{lastMessage?.sentAt || "12:00 PM"}</span>
         </div>
         
-        <p className="text-xs text-gray-500 truncate mb-2">{message}</p>
+        <p className="text-xs text-gray-500 truncate mb-2">{lastMessage?.body || "No new messages yet"}</p>
 
       </div>
     </div>

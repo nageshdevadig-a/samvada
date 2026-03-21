@@ -80,4 +80,13 @@ public class RoomService {
                     return new UserRoomList(room.getRoomId().toHexString(), roomName);
                 }).toList();
     }
+
+    public List<String> getMemberUsernames(String roomId) {
+        if (!ObjectId.isValid(roomId)) {
+            throw new IllegalArgumentException("Invalid room id");
+        }
+         return (Optional.ofNullable(roomRepository.findAllParticipantsUsernameByRoomId(new ObjectId(roomId)))
+                 .orElseThrow(RoomNotFoundException::new));
+
+    }
 }

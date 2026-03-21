@@ -35,13 +35,14 @@ public class MessageController {
     }
 
     @PostMapping("/{roomId}")
-    public ResponseEntity<@NonNull MessageResponse> postMessage(
+    public ResponseEntity<Void> postMessage(
             @PathVariable String roomId,
             @RequestBody @Valid MessageRequest message,
             @AuthenticationPrincipal UserPrincipal user
             )
     {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(messageService.postMessage(roomId, message, user.getEmail()));
+        messageService.saveAndNotify(roomId, message, user.getEmail());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+
     }
 }

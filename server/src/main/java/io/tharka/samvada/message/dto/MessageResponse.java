@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 public record MessageResponse(
         String messageId,
+        String roomId,
         String senderEmail,
         String content,
         LocalDateTime sentAt
@@ -16,6 +17,7 @@ public record MessageResponse(
     {
         return messages.map(message -> new MessageResponse(
                     message.getMessageId().toHexString(),
+                    message.getRoomId().toHexString(),
                     message.getSenderEmail(),
                     message.getContent(),
                     message.getSentAt()
@@ -26,6 +28,7 @@ public record MessageResponse(
     public static MessageResponse from(Message message) {
         return new MessageResponse(
                 message.getMessageId().toHexString(),
+                message.getRoomId().toHexString(),
                 message.getSenderEmail(),
                 message.getContent(),
                 message.getSentAt()
