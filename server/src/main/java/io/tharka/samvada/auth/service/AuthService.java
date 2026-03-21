@@ -135,7 +135,8 @@ public class AuthService
         UUID jti = SecureIdGenerator.generateOrderId();
         return new TokenResponse(rfCookieBuilder(
                 userPrincipal.getEmail(), deviceId ,jti),
-                jwtCookieBuilder(jwtService.generateToken(userPrincipal.getEmail(),jti.toString()))
+                jwtCookieBuilder(jwtService.generateToken(userPrincipal.getEmail(),jti.toString())),
+                isAuthennticatedCookieBuilder()
         );
     }
 
@@ -153,7 +154,8 @@ public class AuthService
         UUID jti = SecureIdGenerator.generateOrderId();
         return new TokenResponse(rfCookieBuilder(
                 rfToken.getUserEmail(), deviceId,jti),
-                jwtCookieBuilder(jwtService.generateToken(rfToken.getUserEmail(), jti.toString()))
+                jwtCookieBuilder(jwtService.generateToken(rfToken.getUserEmail(), jti.toString())),
+                isAuthennticatedCookieBuilder()
         );
     }
 
@@ -187,6 +189,18 @@ public class AuthService
                 .httpOnly(true)
                 .secure(isSecure)
                 .path("/api/v1/auth/refresh_token")
+                .maxAge(TimeUnit.DAYS.toSeconds(7))
+                .sameSite(isSameSite)
+                .build();
+        return cookie.toString();
+    }
+
+    private String isAuthennticatedCookieBuilder()
+    {
+        ResponseCookie cookie =  ResponseCookie.from("isAuthenticated","true")
+                .httpOnly(false)
+                .secure(isSecure)
+                .path("/")
                 .maxAge(TimeUnit.DAYS.toSeconds(7))
                 .sameSite(isSameSite)
                 .build();

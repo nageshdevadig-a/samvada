@@ -32,7 +32,7 @@ public class AuthController
                 UserLoginRequest.from(authService.register(user).getEmail(),user.password()),
                 deviceId);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .header(HttpHeaders.SET_COOKIE, tokens.jwtToken(), tokens.refreshToken())
+                .header(HttpHeaders.SET_COOKIE, tokens.jwtToken(), tokens.refreshToken(), tokens.isAuthenticated())
                 .build();
     }
 
@@ -42,7 +42,7 @@ public class AuthController
     {
         TokenResponse tokens = authService.verify(user,deviceId);
         return ResponseEntity.status(HttpStatus.OK)
-                .header(HttpHeaders.SET_COOKIE, tokens.jwtToken(), tokens.refreshToken())
+                .header(HttpHeaders.SET_COOKIE, tokens.jwtToken(), tokens.refreshToken(), tokens.isAuthenticated())
                 .build();
     }
 
@@ -55,8 +55,7 @@ public class AuthController
         TokenResponse tokens = authService.rfTokenVerify(refreshToken,deviceId);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .header(HttpHeaders.SET_COOKIE, tokens.jwtToken())
-                .header(HttpHeaders.SET_COOKIE, tokens.refreshToken())
+                .header(HttpHeaders.SET_COOKIE, tokens.jwtToken(), tokens.refreshToken(), tokens.isAuthenticated())
                 .build();
     }
 
