@@ -16,7 +16,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @Validated
@@ -27,12 +26,12 @@ public class RoomController {
     private final RoomService roomService;
 
     @PostMapping
-    public ResponseEntity<@NonNull Map<String, String>> createDirectChatRoom(
+    public ResponseEntity<@NonNull RoomResponse> createDirectChatRoom(
             @Valid @RequestBody RoomCreateRequest room,
             @AuthenticationPrincipal UserPrincipal user)
     {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(Map.of("roomId", roomService.getOrCreateDirectChatRoom(user, room)));
+                .body(roomService.getOrCreateDirectChatRoom(user, room));
     }
 
     @GetMapping("/{roomId}")

@@ -24,12 +24,21 @@ public class RoomService {
     private final RoomRepository roomRepository;
     private final UserService userService;
 
-    public String getOrCreateDirectChatRoom(UserPrincipal user, RoomCreateRequest room) {
+    public RoomResponse getOrCreateDirectChatRoom(UserPrincipal user, RoomCreateRequest room) {
         String hash = generateUniqueHash(user.getEmail(), room.targetEmail());
 
         Room roomEntity = roomRepository.findByRoomHashCode(hash)
                 .orElseGet(() -> createNewRoom(user, room, hash));
-        return roomEntity.getRoomId().toHexString();
+        String roomName = roomEntity.getParticipants().stream()
+                .filter(p -> !p.email().equals(user.getEmail()))
+                .map(Participant::fullName)
+                .findFirst()
+                .orElse("Unknown");
+        return new RoomResponse(
+                roomEntity.getRoomId().toHexString(),
+                roomName,
+                roomEntity.getParticipants()
+        );
 
     }
 
