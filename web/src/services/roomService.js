@@ -11,3 +11,7 @@ export const getMessages = (roomId) => {
 export const sendMessage = (message, roomId) => {
    return api.post(`/v1/messages/${roomId}`, {content:message})
 }
+
+export const createRoom = (targetEmail) => {
+   return api.post('/v1/rooms', { targetEmail : targetEmail })
+}
