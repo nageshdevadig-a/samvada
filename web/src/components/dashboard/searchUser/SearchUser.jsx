@@ -1,5 +1,5 @@
-import SeachForm from "./searchForm";
-import SearchResult from "./searchResult";
+import SeachForm from "./SearchForm";
+import SearchResult from "./SearchResult";
 import { Loader2, ArrowLeft } from "lucide-react";
 
 const SearchUser = ({ handleUserSearch, query, setQuery, loading, error, result, createNewRoom}) => {
