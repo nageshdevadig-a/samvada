@@ -7,6 +7,7 @@ import io.tharka.samvada.user.model.UserPrincipal;
 import io.tharka.samvada.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 
@@ -31,6 +32,13 @@ public class UserService {
     public UserResponse getUserDetails(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow( ()-> new BadCredentialsException("Invalid username or password"));
+        return new UserResponse(user.getUserName(), user.getEmail(), user.getFullName());
+    }
+
+    public UserResponse searchUsers(String usernameOrEmail) {
+        User user =  userRepository.findByUserNameOrEmail(usernameOrEmail, usernameOrEmail)
+                .orElseThrow(() -> new UsernameNotFoundException(" User not found"));
+
         return new UserResponse(user.getUserName(), user.getEmail(), user.getFullName());
     }
 }

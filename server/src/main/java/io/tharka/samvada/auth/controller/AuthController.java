@@ -55,8 +55,7 @@ public class AuthController
         TokenResponse tokens = authService.rfTokenVerify(refreshToken,deviceId);
 
         return ResponseEntity.status(HttpStatus.OK)
-                .header(HttpHeaders.SET_COOKIE, tokens.jwtToken())
-                .header(HttpHeaders.SET_COOKIE, tokens.refreshToken())
+                .header(HttpHeaders.SET_COOKIE, tokens.jwtToken(), tokens.refreshToken())
                 .build();
     }
 

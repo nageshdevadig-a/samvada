@@ -135,8 +135,7 @@ public class AuthService
         UUID jti = SecureIdGenerator.generateOrderId();
         return new TokenResponse(rfCookieBuilder(
                 userPrincipal.getEmail(), deviceId ,jti),
-                jwtCookieBuilder(jwtService.generateToken(userPrincipal.getEmail(),jti.toString()))
-        );
+                jwtCookieBuilder(jwtService.generateToken(userPrincipal.getEmail(),jti.toString())));
     }
 
 
@@ -153,8 +152,7 @@ public class AuthService
         UUID jti = SecureIdGenerator.generateOrderId();
         return new TokenResponse(rfCookieBuilder(
                 rfToken.getUserEmail(), deviceId,jti),
-                jwtCookieBuilder(jwtService.generateToken(rfToken.getUserEmail(), jti.toString()))
-        );
+                jwtCookieBuilder(jwtService.generateToken(rfToken.getUserEmail(), jti.toString())));
     }
 
     private String jwtCookieBuilder(String jwt)
@@ -192,6 +190,7 @@ public class AuthService
                 .build();
         return cookie.toString();
     }
+
 
 
 

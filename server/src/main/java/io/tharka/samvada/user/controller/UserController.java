@@ -15,25 +15,34 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @Valid
-@RequestMapping("/api/v1/users/me")
+@RequestMapping("/api/v1/users")
 public class UserController {
 
     private final UserService userService;
 
-    @GetMapping
+    @GetMapping("/me")
     public ResponseEntity<@NonNull UserResponse> getUser(@AuthenticationPrincipal UserPrincipal userPrincipal)
     {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(userService.getUserDetails(userPrincipal.getEmail()));
     }
 
-    @PutMapping
+    @PutMapping("/me")
     public ResponseEntity<@NonNull UserResponse> updateUser(@Valid @RequestBody UserDetailsUpdate user,
                                         @AuthenticationPrincipal UserPrincipal userPrincipal)
     {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(userService.updateUserDetails(user, userPrincipal));
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<@NonNull UserResponse> searchUsers(
+            @RequestParam(name = "query") String usernameOrEmail
+    ){
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(userService.searchUsers(usernameOrEmail));
+    }
+
 
 
 }
