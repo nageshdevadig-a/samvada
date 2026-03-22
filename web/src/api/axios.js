@@ -2,7 +2,7 @@ import axios from "axios";
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api",
-    // timeout: 5000,
+    timeout: 5000,
     withCredentials: true,
 
 });
@@ -57,8 +57,9 @@ api.interceptors.response.use(
         const deviceId = localStorage.getItem("samvada_deviceId");
 
         const isAuthRequest = originalRequest.url.includes("/v1/auth/login");
+        const isRefreshRequest = originalRequest.url.includes("/v1/auth/refresh_token");
 
-        if (error.response?.status === 401 && !originalRequest._retry && !isAuthRequest && deviceId) {
+        if (error.response?.status === 401 && !originalRequest._retry && !isAuthRequest && !isRefreshRequest && deviceId) {
             console.log("Message from Response interceptor");
 
             if (isRefreshing) {
@@ -79,15 +80,25 @@ api.interceptors.response.use(
                 });
                 isRefreshing = false;
                 processQueue(null);
+                document.cookie = "samvada_logged_in=true; Path=/; Max-Age=604800; SameSite=Lax; Secure";
                 return api(originalRequest);
             }
             catch (refreshError) {
+                console.log("invalid refresh token");
+                
+                sessionStorage.removeItem("samvada_user");
+                document.cookie = "samvada_logged_in=; Path=/; Max-Age=0; SameSite=Lax; Secure";
                 isRefreshing = false;
                 processQueue(refreshError, null);
-                localStorage.removeItem("samvada_user");
-                window.location.href = "/";
+                window.location.replace = "/";
                 return Promise.reject(refreshError);
             }
+        }
+
+        if (isRefreshRequest && error.response?.status === 401) {
+            sessionStorage.removeItem("samvada_user");
+            document.cookie = "samvada_logged_in=; Path=/; Max-Age=0; SameSite=Lax; Secure";
+            window.location.replace("/");
         }
         return Promise.reject(error)
     }

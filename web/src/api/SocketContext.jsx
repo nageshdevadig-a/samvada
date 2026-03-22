@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Client } from '@stomp/stompjs';
-import { set } from 'zod';
 
 const SocketContext = createContext(null);
 
@@ -8,7 +7,7 @@ export const SocketProvider = ({ children }) => {
     const [stompClient, setStompClient] = useState(null);
     const [lastMessage, setLastMessage] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(()=>{
-        return !!localStorage.getItem("samvada_user");
+        return !!sessionStorage.getItem("samvada_user");
     });
 
     useEffect(() => {
