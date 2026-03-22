@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router';
 const SideBar = () => {
 
   const [activeIndex, setActiveIndex] = useState(0);
-  const profileLetter = localStorage.getItem("samvada_user") ? JSON.parse(localStorage.getItem("samvada_user")).fullName.charAt(0).toUpperCase() : "U";
+  const profileLetter = sessionStorage.getItem("samvada_user") ? JSON.parse(sessionStorage.getItem("samvada_user")).fullName.charAt(0).toUpperCase() : "U";
   const navItems = [
     { icon: <MessageSquare size={22} />, label: 'Messages' },
     { icon: <Search size={22} />, label: 'Search' }

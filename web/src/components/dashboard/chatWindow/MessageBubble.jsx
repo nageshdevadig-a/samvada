@@ -1,6 +1,6 @@
 const MessageBubble = ({ msg }) => {
 
-    const myEmail = localStorage.getItem("samvada_user") ? JSON.parse(localStorage.getItem("samvada_user")).email : null;
+    const myEmail = sessionStorage.getItem("samvada_user") ? JSON.parse(sessionStorage.getItem("samvada_user")).email : null;
 
     return (
         <div className={`flex ${msg.senderEmail === myEmail ? 'justify-end' : 'justify-start'}`}>

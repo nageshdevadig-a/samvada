@@ -4,7 +4,8 @@ const Logout = () => {
 
     const logoutHandler = () => {
             logout().then(() => {
-                localStorage.removeItem('samvada_user');
+                sessionStorage.removeItem('samvada_user');
+                document.cookie = "samvada_logged_in=; Path=/; Max-Age=0; SameSite=Lax; Secure";
                 window.location.href = "/"; // Redirect to login page after logout
             }).catch((error) => {
                 console.error("Logout failed:", error.response ? error.response.data.detail : error);

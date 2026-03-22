@@ -1,6 +1,6 @@
-import Footer from "../components/Footer"
-import MainLeft from "../components/MainLeft"
-import LoginForm from "../components/LoginForm"
+import Footer from "../components/loginHome/Footer"
+import MainLeft from "../components/loginHome/MainLeft"
+import LoginForm from "../components/loginHome/LoginForm"
 
 function LoginHome({onLoginSuccess}) {
     return (
