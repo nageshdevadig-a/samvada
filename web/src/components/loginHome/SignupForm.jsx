@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signupSchema } from "../schemas/signupSchema";
-import { signup } from "../services/authService";
+import { signupSchema } from "../../schemas/signupSchema";
+import { signup } from "../../services/authService";
 import { Link } from "react-router";
 import { CircleAlert } from "lucide-react";
 

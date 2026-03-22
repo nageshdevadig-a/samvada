@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Link } from "react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema } from "../schemas/loginSchema";
-import { login } from "../services/authService";
+import { loginSchema } from "../../schemas/loginSchema";
+import { login } from "../../services/authService";
 import { CircleAlert } from "lucide-react";
 
 const LoginForm = ({ onLoginSuccess }) => {
@@ -21,6 +21,7 @@ const LoginForm = ({ onLoginSuccess }) => {
             const response = await login(data);
             console.log("Login successful", response);
             if (response.status === 200) {
+                document.cookie = "samvada_logged_in=true; Path=/; Max-Age=604800; SameSite=Lax; Secure";
                 onLoginSuccess();
             }
         }
